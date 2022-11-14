@@ -141,6 +141,8 @@
   <ItemGroup>
     <ClInclude Include="AdjacencyMatrixG.h" />
     <ClInclude Include="Algorithm.h" />
+    <ClInclude Include="AntColonyAlg.h" />
+    <ClInclude Include="AntColonyCell.h" />
     <ClInclude Include="Graph.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="TestSpeed.h" />
@@ -148,6 +150,8 @@
   <ItemGroup>
     <ClCompile Include="AdjacencyMatrixG.cpp" />
     <ClCompile Include="Algorithm.cpp" />
+    <ClCompile Include="AntColonyAlg.cpp" />
+    <ClCompile Include="AntColonyCell.cpp" />
     <ClCompile Include="Graph.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Matrix.cpp" />

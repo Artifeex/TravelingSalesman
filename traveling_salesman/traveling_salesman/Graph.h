@@ -1,10 +1,12 @@
 #pragma once
 #include <vector>
+#include <string>
+
+template<class T>
 class Graph
 {
 public:
-  virtual void GenerateByRandom() = 0;
-  virtual void MakeByFile() = 0;
-  
+  virtual void GenerateByRandom(T(*RandomFunc)()) = 0;
+  virtual void MakeByFile(const std::string& filePath) = 0;
 };
 
