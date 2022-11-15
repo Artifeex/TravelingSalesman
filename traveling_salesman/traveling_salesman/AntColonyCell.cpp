@@ -14,6 +14,11 @@ void AntColonyCell::ChangePheromone(double nPheromone)
   amountPheromone = nPheromone;
 }
 
+void AntColonyCell::ChangeProbabilityTransition(double probability)
+{
+  probabilityTransition = probability;
+}
+
 double AntColonyCell::GetCloseness()
 {
   return closeness;
@@ -22,4 +27,9 @@ double AntColonyCell::GetCloseness()
 double AntColonyCell::GetPheromone()
 {
   return amountPheromone;
+}
+
+void AntColonyCell::Visit()
+{
+  isVisited = true;
 }

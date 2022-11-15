@@ -52,6 +52,11 @@ public:
   void AddVertex(T& infinityValue);
   void AddVertex(const std::vector<T>& AdjacencyValues);
   void AddEdje(int indexFirst, int indexSecond, const T& weight);
+
+  int GetCountVertices() const;
+
+  std::vector<T>& operator[](int index) { return m[index]; }
+  std::vector<T> operator[](int index) const { return m[index]; }
 };
 
 template<class T>
@@ -89,4 +94,10 @@ template<class T>
 inline void AdjacencyMatrixG<T>::AddEdje(int indexFirst, int indexSecond, const T& weight)
 {
   m[indexFirst][indexSecond] = weight;
+}
+
+template<class T>
+inline int AdjacencyMatrixG<T>::GetCountVertices() const
+{
+  return countVertices;
 }
