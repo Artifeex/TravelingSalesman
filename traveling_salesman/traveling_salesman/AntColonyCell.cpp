@@ -29,7 +29,14 @@ double AntColonyCell::GetPheromone()
   return amountPheromone;
 }
 
-void AntColonyCell::Visit()
+double AntColonyCell::GetProbability()
 {
-  isVisited = true;
+  return probabilityTransition;
 }
+
+int AntColonyCell::GetWeight()
+{
+  return weight;
+}
+
+

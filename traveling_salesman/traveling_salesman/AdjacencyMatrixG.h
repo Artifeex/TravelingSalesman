@@ -35,7 +35,7 @@ public:
 	{
 	  try
 	  {
-		file >> m;
+		//file >> m;
 	  }
 	  catch (const std::exception&)
 	  {
@@ -60,11 +60,11 @@ public:
 };
 
 template<class T>
-inline AdjacencyMatrixG<T>::AdjacencyMatrixG(int countVertices)
+inline AdjacencyMatrixG<T>::AdjacencyMatrixG(int _countVertices): m(_countVertices, _countVertices)
 {
+  countVertices = _countVertices;
   if (countVertices <= 0)
 	throw std::string("Bad value of count vertices!");
-  m(countVertices, countVertices);
 }
 
 template<class T>

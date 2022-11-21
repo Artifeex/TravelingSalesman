@@ -26,7 +26,7 @@ public:
   std::vector<T>& operator[](int index) { return matrix[index]; } 
   std::vector<T> operator[](int index) const { return matrix[index]; }
 
-  friend std::ifstream& operator>>(std::ifstream& in, Matrix<T>& m)
+  /*friend std::ifstream& operator>>(std::ifstream& in, Matrix<T>& m)
   {
 	std::string line;
 	for (size_t i = 0; i < m.GetCountRows(); i++)
@@ -37,7 +37,8 @@ public:
 		line >> m[i][j];
 	  }
 	}
-  }
+	return 
+  }*/
 
   friend std::ostream& operator<<(std::ostream& out, const Matrix<T>& m)
   {
