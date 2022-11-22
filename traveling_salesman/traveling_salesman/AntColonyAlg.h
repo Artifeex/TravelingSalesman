@@ -7,7 +7,6 @@
 
 class AntColonyAlg : public Algorithm
 {
-  
 private:
   double alfa; // Влияние количества феромонов на выбор муравья
   double beta; //Влияние близости вершины на выбор муравья
@@ -36,7 +35,7 @@ private:
 public:
   void Run() override;
   AntColonyAlg(const AdjacencyMatrixG<int>& matrix, double _alfa=1.0, double _beta = 1.0,
-	double _startPheromone = 0.2, double _Q = 200, int _countAnts = 5, 
+	double _startPheromone = 0.2, double _Q = 200, int _countAnts = 3, 
 	double _pheromoneResidue = 0.6, double _pheromoneConst = 4);
   int GetMinRoad() noexcept;
 };

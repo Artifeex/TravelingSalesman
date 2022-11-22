@@ -57,6 +57,12 @@ public:
 
   std::vector<T>& operator[](int index) { return m[index]; }
   std::vector<T> operator[](int index) const { return m[index]; }
+
+  friend std::ostream& operator<<(std::ostream& out, const AdjacencyMatrixG<T>& matr)
+  {
+	out << matr.m;
+	return out;
+  }
 };
 
 template<class T>
@@ -101,3 +107,4 @@ inline int AdjacencyMatrixG<T>::GetCountVertices() const
 {
   return countVertices;
 }
+

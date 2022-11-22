@@ -127,7 +127,6 @@ void AntColonyAlg::Run()
 	  antRoute[numberAnt][weightIndex] += matrix[startVer][nextVert].GetWeight();
 	  startVer = nextVert;
 	}
-	
 	antRoute[numberAnt][countVertecies] = numberAnt % countVertecies;
 	antRoute[numberAnt][weightIndex] += matrix[startVer][numberAnt % countVertecies].GetWeight();
 	
