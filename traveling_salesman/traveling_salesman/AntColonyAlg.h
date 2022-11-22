@@ -13,31 +13,31 @@ private:
   double beta; //Влияние близости вершины на выбор муравья
   double pheromoneResidue; // сколько феромона остается после конца итерации
   int countAnts;
-  std::vector<int> vertVisitStat; // для определения доступных вершин для выбора муравья
-  std::vector<std::vector<int>> road;// для отслеживания путей, по который ходили муравьи для обн-я фер-на
+  int countVertecies;
+  std::vector<int> visitedVertecies; // для определения доступных вершин для выбора муравья
+  std::vector<std::vector<int>> antRoute;// для отслеживания путей, по который ходили муравьи для обн-я фер-на
   AdjacencyMatrixG<AntColonyCell> matrix;
-
+  int weightIndex; // указывает на положение веса всего маршрута муравья
   int minRoad;
   double Q; // для близости
   double pheromoneConst; // Сколько феромона выделил муравей суммарно на всем пути
-  const double infinity = DBL_MAX;
+
   //Методы
   std::vector<int> GetCurFreeVert();
   // Работа с вероятностью
-  double CalculateProbabilityTransition(int i, int j, double probabilitySum); 
-  double CalculateSumProbabilityTransition(int start); 
-  double CalculateDesireTransition(int i, int j); // тау умножить на q 
+  double ProbabilityTransition(int i, int j, double probabilitySum); 
+  double SumProbabilityTransition(int start); 
+  double DesireTransition(int i, int j); // тау умножить на q 
   void UpdateProbabilityTransition(int start);
 
   int SelectVert(int start);
-  //Работы с феромоном
   void UpdatePheromones();
-  
+  void ClearVisitedVert();
 public:
   void Run() override;
   AntColonyAlg(const AdjacencyMatrixG<int>& matrix, double _alfa=1.0, double _beta = 1.0,
 	double _startPheromone = 0.2, double _Q = 200, int _countAnts = 5, 
 	double _pheromoneResidue = 0.6, double _pheromoneConst = 4);
-  int GetMinRoad();
+  int GetMinRoad() noexcept;
 };
 

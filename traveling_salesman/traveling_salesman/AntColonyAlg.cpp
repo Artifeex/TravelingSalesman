@@ -1,41 +1,43 @@
 #include "AntColonyAlg.h"
 
-double AntColonyAlg::CalculateProbabilityTransition(int i, int j, double probabilitySum) // P_i_j
+double AntColonyAlg::ProbabilityTransition(int i, int j, double probabilitySum) // P_i_j
 {
-  double desireTransition = CalculateDesireTransition(i, j);
-  double sumProbabilityTransition = probabilitySum;
+  const double desireTransition = DesireTransition(i, j);
+  const double sumProbabilityTransition = probabilitySum;
 
   return desireTransition / sumProbabilityTransition;
 }
 
-double AntColonyAlg::CalculateSumProbabilityTransition(int start) //знаметатель для формулы P
+double AntColonyAlg::SumProbabilityTransition(int start) //знаметатель для формулы P
 {
   double result = 0;
-  std::vector<int> curFreeVert = GetCurFreeVert();
-  if (curFreeVert.size() == 0)
-	return 1.0;
-  for (const auto& vertex : curFreeVert)
-  {
-	result += CalculateDesireTransition(start, vertex);
-  }
+  for (const auto& vertex : GetCurFreeVert())
+	result += DesireTransition(start, vertex);
+
   return result;
 }
 
-double AntColonyAlg::CalculateDesireTransition(int i, int j) // числитель для формулы P
+double AntColonyAlg::DesireTransition(int i, int j) // числитель для формулы P
 {
-  double amountPheromore = matrix[i][j].GetPheromone();
-  double closeness = matrix[i][j].GetCloseness();
+  const double amountPheromore = matrix[i][j].GetPheromone();
+  const double closeness = matrix[i][j].GetCloseness();
 
   return pow(amountPheromore, alfa) * pow(closeness, beta);
 }
 
 void AntColonyAlg::UpdateProbabilityTransition(int start)
 {
-  double sumProb = CalculateSumProbabilityTransition(start);
-  for (const auto& vert : GetCurFreeVert())
+  double sumProb = SumProbabilityTransition(start);
+  std::vector<int> freeVert = GetCurFreeVert();
+  if (freeVert.size() == 1)
+  {
+	matrix[start][freeVert[0]].ChangeProbabilityTransition(1.0);
+	return;
+  }
+  for (const auto& vert : freeVert)
   {
 	matrix[start][vert].ChangeProbabilityTransition(
-	  CalculateProbabilityTransition(start, vert, sumProb));
+	  ProbabilityTransition(start, vert, sumProb));
   }
 }
 
@@ -61,30 +63,44 @@ void AntColonyAlg::UpdatePheromones()
 {
   for (size_t i = 0; i < matrix.GetCountVertices(); i++)
   {
-	for (size_t j = i; j < matrix.GetCountVertices(); j++)
+	for (size_t j = 0; j < matrix.GetCountVertices(); j++)
 	{
 	  //1. Испарение феромона
 	  matrix[i][j].ChangePheromone(matrix[i][j].GetPheromone() * pheromoneResidue);
 	}
   }
-  //2. Добавление феромона от проходки муравьев
-  // road[k].size() - 1 - чтобы получить последний элемент, в котором хранится длина маршрута
-  for (size_t k = 0; k < countAnts; k++)
+  double supplementPheromone = 0.0; // Добавка, полученная от всех муравьев
+  double lastPheromone = 0.0; //старое значение феромона
+  int vert1 = 0;
+  int vert2 = 0;
+
+  for (size_t numberAnt = 0; numberAnt < countAnts; numberAnt++)
   {
-	for (size_t i = 0; i < road[k].size(); i++)
+	for (size_t i = 0; i < countVertecies; i++)
 	{
-	  matrix[road[k][i]][road[k][i + 1]].ChangePheromone(matrix[road[k][i]][road[k][i + 1]].GetPheromone()
-		+ pheromoneConst / road[k][road[k].size() - 1]);
+	  vert1 = antRoute[numberAnt][i];
+	  vert2 = antRoute[numberAnt][i + 1];
+
+	  lastPheromone = matrix[vert1][vert2].GetPheromone();
+	  supplementPheromone = pheromoneConst / antRoute[numberAnt][countVertecies + 1];
+
+	  matrix[vert1][vert2].ChangePheromone(lastPheromone + supplementPheromone);
 	}
   }
+}
+
+void AntColonyAlg::ClearVisitedVert()
+{
+  for (size_t i = 0; i < visitedVertecies.size(); i++)
+	visitedVertecies[i] = 0;
 }
 
 std::vector<int> AntColonyAlg::GetCurFreeVert()
 {
   std::vector<int> freeVert;
-  for (size_t i = 0; i < vertVisitStat.size(); i++)
+  for (size_t i = 0; i < visitedVertecies.size(); i++)
   {
-	if (vertVisitStat[i] == 0)
+	if (visitedVertecies[i] == 0)
 	  freeVert.push_back(i);
   }
   return freeVert;
@@ -92,48 +108,39 @@ std::vector<int> AntColonyAlg::GetCurFreeVert()
 
 void AntColonyAlg::Run()
 {
-  //Для одного муравья
   int startVer = 0;
-  
-  // Расчитал вер-ть перехода для каждой возможной для перехода вершины
+  int nextVert = 0;
   for (size_t numberAnt = 0; numberAnt < countAnts; numberAnt++)
   {
-	//чтобы если муравьев было больше, чем вершин все работал
-	startVer = numberAnt % matrix.GetCountVertices();
-	vertVisitStat[startVer] = 1; // считаем за посещенную
-	// в этом цикле работа одного муравья
-	for (size_t i = 0; i < matrix.GetCountVertices(); i++)
-	{
-	  road[numberAnt][i] = startVer; // добавили в маршрут
+	startVer = numberAnt % countVertecies;
+	visitedVertecies[startVer] = 1;
+	antRoute[numberAnt][0] = startVer;
 
-	  // обновили для данного муравья и вершины в которой он находится вер-ти перехода в другие вершины
-	  UpdateProbabilityTransition(startVer); 
-	  // на основе новых вер-тей выбрали новую вершину
-	  int nextVert = SelectVert(startVer); // выбрали вершину для перехода
-	  // производим переход в новую вершину и говорим, что она новая стартовая
-	  // нужно теперь что-то придумать с тем, как запомнить этот переход, чтобы обновить феромоны
-	  road[numberAnt][road[numberAnt].size() - 1] += matrix[startVer][nextVert].GetWeight(); // добавляем в общую сумму
-	  startVer = nextVert;
-	  vertVisitStat[startVer] = 1; //отменили посещенной
-	}
-	road[numberAnt][matrix.GetCountVertices()] = numberAnt; // чтобы замкнуть
-	road[numberAnt][road[numberAnt].size() - 1] += matrix[startVer][numberAnt].GetWeight();
-	if (minRoad > road[numberAnt][road[numberAnt].size() - 1])
-	  minRoad = road[numberAnt][road[numberAnt].size() - 1];
-	// очищаем стату по пройденным вершинам
-	for (size_t i = 0; i < vertVisitStat.size(); i++)
+	for (size_t i = 1; i < countVertecies; i++)
 	{
-	  vertVisitStat[i] = 0;
+
+	  UpdateProbabilityTransition(startVer); 
+	  nextVert = SelectVert(startVer); 
+
+	  visitedVertecies[nextVert] = 1;
+	  antRoute[numberAnt][i] = nextVert;
+	  antRoute[numberAnt][weightIndex] += matrix[startVer][nextVert].GetWeight();
+	  startVer = nextVert;
 	}
+	
+	antRoute[numberAnt][countVertecies] = numberAnt % countVertecies;
+	antRoute[numberAnt][weightIndex] += matrix[startVer][numberAnt % countVertecies].GetWeight();
+	
+	ClearVisitedVert();
   }
   UpdatePheromones();
-  
+
 }
 
 
-AntColonyAlg::AntColonyAlg(const AdjacencyMatrixG<int>& _matrix, double _alfa, double _beta,
+AntColonyAlg::AntColonyAlg(const AdjacencyMatrixG<int>& adjacencyMatr, double _alfa, double _beta,
   double _startPheromone, double _Q, int _countAnts,
-  double _pheromoneResidue, double _pheromoneConst) :matrix(_matrix.GetCountVertices())
+  double _pheromoneResidue, double _pheromoneConst) :matrix(adjacencyMatr.GetCountVertices())
 {
   alfa = _alfa;
   beta = _beta;
@@ -141,32 +148,38 @@ AntColonyAlg::AntColonyAlg(const AdjacencyMatrixG<int>& _matrix, double _alfa, d
   Q = _Q;
   countAnts = _countAnts;
   pheromoneResidue = _pheromoneResidue;
-  minRoad = INT_MAX;
   pheromoneConst = _pheromoneConst;
-  road.resize(countAnts);
-  vertVisitStat.resize(matrix.GetCountVertices());
+
+  countVertecies = adjacencyMatr.GetCountVertices();
+  visitedVertecies.resize(countVertecies);
+  antRoute.resize(countAnts);
+  minRoad = INT_MAX;
+  weightIndex = countVertecies + 1;
   for (size_t i = 0; i < countAnts; i++) 
+	antRoute[i].resize(weightIndex + 1); // + 1 из-за доп вершины в замыкании
+
+  for (size_t i = 0; i < adjacencyMatr.GetCountVertices(); i++)
   {
-	road[i].resize(matrix.GetCountVertices() + 2); // доп место для подсчета пути
-	// +2 - одна для замыкания маршрута, а другая для хранения длины маршрута
-  }
-  for (size_t i = 0; i < _matrix.GetCountVertices(); i++)
-  {
-	for (size_t j = i; j < _matrix.GetCountVertices(); j++)
+	for (size_t j = 0; j < adjacencyMatr.GetCountVertices(); j++)
 	{
 	  if (i == j)
-		this->matrix[i][j] = AntColonyCell(infinity, 0.0, infinity);
+		matrix[i][j] = AntColonyCell(DBL_MAX, 0.0, INT_MAX);
 	  else
 	  {
-		this->matrix[i][j] = AntColonyCell(Q / _matrix[i][j], _startPheromone, _matrix[i][j]);
-		// Так как симметричная
-		//this->matrix[j][i] = AntColonyCell(Q / _matrix[i][j], _startPheromone);
+		matrix[i][j] = AntColonyCell(Q / adjacencyMatr[i][j], _startPheromone, adjacencyMatr[i][j]);
+		matrix[j][i] = AntColonyCell(Q / adjacencyMatr[j][i], _startPheromone, adjacencyMatr[j][i]);
 	  }
+		
 	}
   }
 }
 
-int AntColonyAlg::GetMinRoad()
+int AntColonyAlg::GetMinRoad() noexcept
 {
+  for (size_t i = 0; i < countAnts; i++)
+  {
+	if (antRoute[i][weightIndex] < minRoad)
+	  minRoad = antRoute[i][weightIndex];
+  }
   return minRoad;
 }
