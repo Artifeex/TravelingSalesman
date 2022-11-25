@@ -16,7 +16,7 @@ public:
   Matrix(int countRows, int countColumns);
   // Конструктор преобразования типа
   Matrix(const std::vector<std::vector<T>>& m); 
-
+  Matrix() = default;
   //Методы
   int GetCountRows() const { return rows; }
   int GetCountColumns() const { return columns; }
@@ -25,7 +25,7 @@ public:
   // Операторы
   std::vector<T>& operator[](int index) { return matrix[index]; } 
   std::vector<T> operator[](int index) const { return matrix[index]; }
-
+  Matrix& operator=(const Matrix& m);
   /*friend std::ifstream& operator>>(std::ifstream& in, Matrix<T>& m)
   {
 	std::string line;
@@ -109,5 +109,18 @@ inline void Matrix<T>::AddColumn(std::vector<T>& values)
   }
   else
 	throw std::string("Count rows != rows matrix");
+}
+
+template<class T>
+inline Matrix<T>& Matrix<T>::operator=(const Matrix<T>& m)
+{
+  if (this == &m)
+	return *this;
+  else
+  {
+	matrix = m.matrix;
+	return *this;
+  }
+
 }
 

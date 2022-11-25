@@ -182,3 +182,17 @@ int AntColonyAlg::GetMinRoad() noexcept
   }
   return minRoad;
 }
+
+std::vector<int> AntColonyAlg::GetMinPath()
+{
+  int index = -1;
+  for (size_t i = 0; i < countAnts; i++)
+  {
+	if (antRoute[i][weightIndex] == minRoad)
+	{
+	  minRoad = antRoute[i][weightIndex];
+	  index = i;
+	}
+  }
+  return std::vector<int>(antRoute[index].begin(), antRoute[index].begin() + weightIndex);
+}

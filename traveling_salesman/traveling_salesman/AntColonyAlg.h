@@ -4,6 +4,7 @@
 #include "AntColonyCell.h"
 #include <cmath>
 #include <float.h>
+#include <valarray>
 
 class AntColonyAlg : public Algorithm
 {
@@ -28,7 +29,6 @@ private:
   double SumProbabilityTransition(int start); 
   double DesireTransition(int i, int j); // тау умножить на q 
   void UpdateProbabilityTransition(int start);
-
   int SelectVert(int start);
   void UpdatePheromones();
   void ClearVisitedVert();
@@ -38,5 +38,6 @@ public:
 	double _startPheromone = 0.2, double _Q = 200, int _countAnts = 3, 
 	double _pheromoneResidue = 0.6, double _pheromoneConst = 4);
   int GetMinRoad() noexcept;
+  std::vector<int> GetMinPath();
 };
 

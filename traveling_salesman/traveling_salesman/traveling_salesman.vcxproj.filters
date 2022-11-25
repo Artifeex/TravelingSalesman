@@ -36,6 +36,9 @@
     <ClInclude Include="AntColonyCell.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="BruteForceAlg.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Graph.cpp">
@@ -60,6 +63,9 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="AntColonyCell.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="BruteForceAlg.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>

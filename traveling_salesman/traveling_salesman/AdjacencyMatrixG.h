@@ -11,7 +11,7 @@ private:
   int countVertices;
 public:
   AdjacencyMatrixG(int countVertices);
-
+  AdjacencyMatrixG(const Matrix<T>& matrix);
   AdjacencyMatrixG()
   {
 	countVertices = 0;
@@ -54,7 +54,7 @@ public:
   void AddEdje(int indexFirst, int indexSecond, const T& weight);
 
   int GetCountVertices() const;
-
+  Matrix<T> GetMatrix();
   std::vector<T>& operator[](int index) { return m[index]; }
   std::vector<T> operator[](int index) const { return m[index]; }
 
@@ -71,6 +71,12 @@ inline AdjacencyMatrixG<T>::AdjacencyMatrixG(int _countVertices): m(_countVertic
   countVertices = _countVertices;
   if (countVertices <= 0)
 	throw std::string("Bad value of count vertices!");
+}
+
+template<class T>
+inline AdjacencyMatrixG<T>::AdjacencyMatrixG(const Matrix<T>& matrix)
+{
+  m = matrix;
 }
 
 template<class T>
