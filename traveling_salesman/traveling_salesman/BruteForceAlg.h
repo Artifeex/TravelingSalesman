@@ -2,7 +2,7 @@
 #include "Algorithm.h"
 #include <algorithm>
 #include "AdjacencyMatrixG.h"
-class BruteForceAlg: Algorithm
+class BruteForceAlg:public Algorithm
 {
 private:
   AdjacencyMatrixG<int> matrix;

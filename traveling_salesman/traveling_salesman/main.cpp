@@ -2,6 +2,7 @@
 #include <iostream>
 #include "AntColonyAlg.h"
 #include "BruteForceAlg.h"
+#include "TestSpeed.h"
 
 int main(int argc, char* argv[])
 {
@@ -30,5 +31,6 @@ int main(int argc, char* argv[])
   {
 	std::cout << res[i] << " ";
   }
-
+  std::cout << std::endl << std::endl;
+  ts::TestSpeed::CompareAlgs(&alg, &bAlg);
 }

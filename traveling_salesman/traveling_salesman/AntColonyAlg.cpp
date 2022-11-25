@@ -148,7 +148,7 @@ AntColonyAlg::AntColonyAlg(const AdjacencyMatrixG<int>& adjacencyMatr, double _a
   countAnts = _countAnts;
   pheromoneResidue = _pheromoneResidue;
   pheromoneConst = _pheromoneConst;
-
+  algName = "AntAlg";
   countVertecies = adjacencyMatr.GetCountVertices();
   visitedVertecies.resize(countVertecies);
   antRoute.resize(countAnts);
