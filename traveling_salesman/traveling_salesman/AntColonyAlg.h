@@ -4,7 +4,7 @@
 #include "AntColonyCell.h"
 #include <cmath>
 #include <float.h>
-#include <valarray>
+//#include <valarray>
 
 class AntColonyAlg : public Algorithm
 {

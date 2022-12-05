@@ -17,13 +17,16 @@ public:
 	countVertices = 0;
   }
 
-  void GenerateByRandom(T(*RandomFunc)()) override
+  void GenerateByRandom(T(*RandomFunc)(int i, int j)) override
   {
+	if (countVertices <= 0)
+	  throw std::string("count vertices <= 0");
+
 	for (size_t i = 0; i < countVertices; i++)
 	{
 	  for (size_t j = 0; j < countVertices; j++)
 	  {
-		m[i][j] = RandomFunc();
+		m[i][j] = RandomFunc(i, j);
 	  }
 	}
   }

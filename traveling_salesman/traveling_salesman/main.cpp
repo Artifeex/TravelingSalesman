@@ -4,12 +4,18 @@
 #include "BruteForceAlg.h"
 #include "TestSpeed.h"
 
+int RandomFunc(int i, int j)
+{
+  return rand();
+}
+
+
 int main(int argc, char* argv[])
 {
-  AdjacencyMatrixG<int> ma(3);
-  ma[0] = { 0, 10, 7 };
-  ma[1] = { 10, 0, 5 };
-  ma[2] = { 20, 5, 0 };
+  srand(time(0));
+  AdjacencyMatrixG<int> ma(7);
+  ma.GenerateByRandom(RandomFunc);
+  
   AntColonyAlg alg(ma);
   std::cout << ma;
   alg.Run();
