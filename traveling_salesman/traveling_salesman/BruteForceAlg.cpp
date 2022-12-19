@@ -6,17 +6,12 @@ void BruteForceAlg::Run()
   std::vector<int> bestCurRoad;
   int n = matrix[0].size();
   size_t sourceVert = 0;
-  // Во внешнем цикле выбираем стартовую вершину
-  for (sourceVert = 0; sourceVert < n; sourceVert++)
-  {
 	// создаем самую маленькую перестановку в лексикографическом порядке
 	for (size_t i = 0; i < n; i++)
-	{
 	  if (i != sourceVert)
 		curRoad.push_back(i);
-	}
 	// генеририуем все перестановки отличных от начальной вершины
-	while (std::next_permutation(curRoad.begin(), curRoad.end()))
+	do
 	{
 	  int pathWeight = 0;
 	  int curVert = sourceVert;
@@ -32,12 +27,12 @@ void BruteForceAlg::Run()
 	  if (shortestValuePath > pathWeight)
 	  {
 		shortestValuePath = pathWeight;
+		shortestPath.clear();
 		shortestPath.push_back(sourceVert);
 		shortestPath.insert(shortestPath.begin() + 1, curRoad.begin(), curRoad.end());
 		shortestPath.push_back(sourceVert);
 	  }
-	}
-  }
+	}while (std::next_permutation(curRoad.begin(), curRoad.end()));
 }
 
 BruteForceAlg::BruteForceAlg(const AdjacencyMatrixG<int>& m)
@@ -54,12 +49,17 @@ BruteForceAlg::BruteForceAlg(const Matrix<int>& m)
   algName = "BruteForceAlg";
 }
 
-int BruteForceAlg::GetShortestValuePath()
+int BruteForceAlg::GetMinWeight()
 {
   return shortestValuePath;
 }
 
-std::vector<int> BruteForceAlg::GetShortestPath()
+std::vector<int> BruteForceAlg::GetMinRoute()
 {
   return shortestPath;
+}
+
+void BruteForceAlg::SetNameAlg(std::string _nameAlg)
+{
+  algName = _nameAlg;
 }

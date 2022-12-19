@@ -3,7 +3,7 @@
 #include "BruteForceAlg.h"
 #include <stdio.h> 
 #include <time.h> 
-
+#include "Timer.h"
 namespace ts
 {
   class TestSpeed

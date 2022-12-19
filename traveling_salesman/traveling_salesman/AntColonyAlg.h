@@ -18,10 +18,13 @@ private:
   std::vector<std::vector<int>> antRoute;// для отслеживания путей, по который ходили муравьи для обн-я фер-на
   AdjacencyMatrixG<AntColonyCell> matrix;
   int weightIndex; // указывает на положение веса всего маршрута муравья
-  int minRoad;
-  double Q; // для близости
-  double pheromoneConst; // Сколько феромона выделил муравей суммарно на всем пути
+  int minWeightRoute = INT_MAX;
 
+  std::vector<int> bestRoute;
+
+  double closConst; // для близости
+  double pheromoneConst; // Сколько феромона выделил муравей суммарно на всем пути
+  int countIterations;
   //Методы
   std::vector<int> GetCurFreeVert();
   // Работа с вероятностью
@@ -31,13 +34,29 @@ private:
   void UpdateProbabilityTransition(int start);
   int SelectVert(int start);
   void UpdatePheromones();
+
   void ClearVisitedVert();
+
+  void ClearAntRoute();
+
+  void UpdateBestRouteWeight();
+
+  void UpdateBestRoute();
+
+  int CalculateMinWeight() noexcept;
+
+  std::vector<int> CalculateMinRoute();
+
+  void UpdateResults();
+  void SetNameAlg(std::string _nameAlg);
+
 public:
   void Run() override;
-  AntColonyAlg(const AdjacencyMatrixG<int>& matrix, double _alfa=1.0, double _beta = 1.0,
-	double _startPheromone = 0.2, double _Q = 200, int _countAnts = 3, 
-	double _pheromoneResidue = 0.6, double _pheromoneConst = 4);
-  int GetMinRoad() noexcept;
-  std::vector<int> GetMinPath();
+  AntColonyAlg(const AdjacencyMatrixG<int>& matrix, double _alfa=1, double _beta = 2,
+	double _startPheromone = 0.2, double _closConst = 1, int _countAnts = 12, 
+	double _pheromoneResidue = 0.3, double _pheromoneConst = 1, int _countIterations = 1);
+  int GetMinWeight() override;
+  std::vector<int>  GetMinRoute() override;
+  
 };
 

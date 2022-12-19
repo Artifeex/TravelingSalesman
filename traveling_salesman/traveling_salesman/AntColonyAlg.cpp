@@ -95,6 +95,17 @@ void AntColonyAlg::ClearVisitedVert()
 	visitedVertecies[i] = 0;
 }
 
+void AntColonyAlg::ClearAntRoute()
+{
+  for (size_t i = 0; i < antRoute.size(); i++)
+  {
+	for (size_t j = 0; j < antRoute[i].size(); j++)
+	{
+	  antRoute[i][j] = 0;
+	}
+  }
+}
+
 std::vector<int> AntColonyAlg::GetCurFreeVert()
 {
   std::vector<int> freeVert;
@@ -106,45 +117,54 @@ std::vector<int> AntColonyAlg::GetCurFreeVert()
   return freeVert;
 }
 
-void AntColonyAlg::Run()
+void AntColonyAlg::SetNameAlg(std::string _nameAlg)
 {
-  int startVer = 0;
-  int nextVert = 0;
-  for (size_t numberAnt = 0; numberAnt < countAnts; numberAnt++)
-  {
-	startVer = numberAnt % countVertecies;
-	visitedVertecies[startVer] = 1;
-	antRoute[numberAnt][0] = startVer;
-
-	for (size_t i = 1; i < countVertecies; i++)
-	{
-
-	  UpdateProbabilityTransition(startVer); 
-	  nextVert = SelectVert(startVer); 
-
-	  visitedVertecies[nextVert] = 1;
-	  antRoute[numberAnt][i] = nextVert;
-	  antRoute[numberAnt][weightIndex] += matrix[startVer][nextVert].GetWeight();
-	  startVer = nextVert;
-	}
-	antRoute[numberAnt][countVertecies] = numberAnt % countVertecies;
-	antRoute[numberAnt][weightIndex] += matrix[startVer][numberAnt % countVertecies].GetWeight();
-	
-	ClearVisitedVert();
-  }
-  UpdatePheromones();
-
+  algName = _nameAlg;
 }
 
+void AntColonyAlg::Run()
+{
+  for (size_t i = 0; i < countIterations; i++)
+  {
+	int startVer = 0;
+	int nextVert = 0;
+	for (size_t numberAnt = 0; numberAnt < countAnts; numberAnt++)
+	{
+	  startVer = numberAnt % countVertecies;
+	  visitedVertecies[startVer] = 1;
+	  antRoute[numberAnt][0] = startVer;
+
+	  for (size_t i = 1; i < countVertecies; i++)
+	  {
+
+		UpdateProbabilityTransition(startVer);
+		nextVert = SelectVert(startVer);
+
+		visitedVertecies[nextVert] = 1;
+		antRoute[numberAnt][i] = nextVert;
+		antRoute[numberAnt][weightIndex] += matrix[startVer][nextVert].GetWeight();
+		startVer = nextVert;
+	  }
+	  antRoute[numberAnt][countVertecies] = numberAnt % countVertecies;
+	  antRoute[numberAnt][weightIndex] += matrix[startVer][numberAnt % countVertecies].GetWeight();
+
+	  ClearVisitedVert();
+	}
+	UpdatePheromones();
+	UpdateResults();
+	ClearAntRoute();
+  }
+}
 
 AntColonyAlg::AntColonyAlg(const AdjacencyMatrixG<int>& adjacencyMatr, double _alfa, double _beta,
   double _startPheromone, double _Q, int _countAnts,
-  double _pheromoneResidue, double _pheromoneConst) :matrix(adjacencyMatr.GetCountVertices())
+  double _pheromoneResidue, double _pheromoneConst, int _countIterations) :matrix(adjacencyMatr.GetCountVertices())
 {
   alfa = _alfa;
   beta = _beta;
   _startPheromone = _startPheromone;
-  Q = _Q;
+  closConst = _Q;
+  countIterations = _countIterations;
   countAnts = _countAnts;
   pheromoneResidue = _pheromoneResidue;
   pheromoneConst = _pheromoneConst;
@@ -152,7 +172,7 @@ AntColonyAlg::AntColonyAlg(const AdjacencyMatrixG<int>& adjacencyMatr, double _a
   countVertecies = adjacencyMatr.GetCountVertices();
   visitedVertecies.resize(countVertecies);
   antRoute.resize(countAnts);
-  minRoad = INT_MAX;
+  minWeightRoute = INT_MAX;
   weightIndex = countVertecies + 1;
   for (size_t i = 0; i < countAnts; i++) 
 	antRoute[i].resize(weightIndex + 1); // + 1 из-за доп вершины в замыкании
@@ -165,34 +185,64 @@ AntColonyAlg::AntColonyAlg(const AdjacencyMatrixG<int>& adjacencyMatr, double _a
 		matrix[i][j] = AntColonyCell(DBL_MAX, 0.0, INT_MAX);
 	  else
 	  {
-		matrix[i][j] = AntColonyCell(Q / adjacencyMatr[i][j], _startPheromone, adjacencyMatr[i][j]);
-		matrix[j][i] = AntColonyCell(Q / adjacencyMatr[j][i], _startPheromone, adjacencyMatr[j][i]);
+		matrix[i][j] = AntColonyCell(closConst / adjacencyMatr[i][j], _startPheromone, adjacencyMatr[i][j]);
+		matrix[j][i] = AntColonyCell(closConst / adjacencyMatr[j][i], _startPheromone, adjacencyMatr[j][i]);
 	  }
 		
 	}
   }
 }
 
-int AntColonyAlg::GetMinRoad() noexcept
+void AntColonyAlg::UpdateBestRoute()
 {
-  for (size_t i = 0; i < countAnts; i++)
-  {
-	if (antRoute[i][weightIndex] < minRoad)
-	  minRoad = antRoute[i][weightIndex];
-  }
-  return minRoad;
+  if (minWeightRoute > CalculateMinWeight())
+	bestRoute = CalculateMinRoute();
 }
 
-std::vector<int> AntColonyAlg::GetMinPath()
+void AntColonyAlg::UpdateBestRouteWeight()
+{
+  if (minWeightRoute > CalculateMinWeight())
+	minWeightRoute = CalculateMinWeight();
+}
+
+int AntColonyAlg::GetMinWeight()
+{
+  return minWeightRoute;
+}
+
+std::vector<int> AntColonyAlg::GetMinRoute()
+{
+  return bestRoute;
+}
+
+int AntColonyAlg::CalculateMinWeight() noexcept
+{
+  int localMinRoad = INT_MAX;
+  for (size_t i = 0; i < countAnts; i++)
+  {
+	if (antRoute[i][weightIndex] < localMinRoad)
+	  localMinRoad = antRoute[i][weightIndex];
+  }
+  return localMinRoad;
+}
+
+std::vector<int> AntColonyAlg::CalculateMinRoute()
 {
   int index = -1;
   for (size_t i = 0; i < countAnts; i++)
   {
-	if (antRoute[i][weightIndex] == minRoad)
+	if (antRoute[i][weightIndex] == minWeightRoute)
 	{
-	  minRoad = antRoute[i][weightIndex];
 	  index = i;
 	}
   }
   return std::vector<int>(antRoute[index].begin(), antRoute[index].begin() + weightIndex);
+}
+
+void AntColonyAlg::UpdateResults()
+{
+  if (minWeightRoute > CalculateMinWeight()) {
+	minWeightRoute = CalculateMinWeight();
+	bestRoute = CalculateMinRoute();
+  }
 }

@@ -6,37 +6,22 @@
 
 int RandomFunc(int i, int j)
 {
-  return rand();
+  if (i == j)
+	return INT_MAX;
+  return rand() % 100 + 1;
 }
 
 
 int main(int argc, char* argv[])
 {
-  srand(time(0));
-  AdjacencyMatrixG<int> ma(7);
+  srand(3);
+  setlocale(LC_ALL, "Russian");
+  AdjacencyMatrixG<int> ma(3);
   ma.GenerateByRandom(RandomFunc);
-  
   AntColonyAlg alg(ma);
-  std::cout << ma;
-  alg.Run();
-  int minRoad = alg.GetMinRoad();
-  std::vector<int> res = alg.GetMinPath();
-  std::cout <<"Min road: " << minRoad << std::endl;
-  std::cout << "Path: " << std::endl;
-  for (size_t i = 0; i < res.size(); i++)
-  {
-	std::cout << res[i] << " ";
-  }
-  std::cout << std::endl << std::endl;
   BruteForceAlg bAlg(ma);
-  bAlg.Run();
-  std::cout << "Min road: " << bAlg.GetShortestValuePath() << std::endl;
-  std::cout << "Path: " << std::endl;
-  res = bAlg.GetShortestPath();
-  for (size_t i = 0; i < res.size(); i++)
-  {
-	std::cout << res[i] << " ";
-  }
-  std::cout << std::endl << std::endl;
+  std::cout << "Матрица смежности имеет вид:" << std::endl;
+  std::cout << ma;
+  std::cout << std::endl;
   ts::TestSpeed::CompareAlgs(&alg, &bAlg);
 }
