@@ -17,6 +17,15 @@ public:
 	countVertices = 0;
   }
 
+  int GetCountRows() const
+  { 
+	return m.GetCountRows(); 
+  }
+  int GetCountColumns() const
+  { 
+	return m.GetCountColumns(); 
+  }
+
   void GenerateByRandom(T(*RandomFunc)(int i, int j)) override
   {
 	if (countVertices <= 0)
@@ -66,12 +75,25 @@ public:
 	out << matr.m;
 	return out;
   }
+
+
+  //Нужны для алгоритма Литтла
+  void RemoveRowColumn(int row, int column) { m.RemoveRowColumn(row, column); };
+  int RowIndex(int index) const
+  { 
+	return m.RowIndex(index);
+  }
+  int ColumnIndex(int index) const
+  { 
+	return m.ColumnIndex(index);
+  }
 };
 
 template<class T>
 inline AdjacencyMatrixG<T>::AdjacencyMatrixG(int _countVertices): m(_countVertices, _countVertices)
 {
   countVertices = _countVertices;
+  
   if (countVertices <= 0)
 	throw std::string("Bad value of count vertices!");
 }
@@ -80,6 +102,7 @@ template<class T>
 inline AdjacencyMatrixG<T>::AdjacencyMatrixG(const Matrix<T>& matrix)
 {
   m = matrix;
+  countVertices = m.GetCountRows();
 }
 
 template<class T>

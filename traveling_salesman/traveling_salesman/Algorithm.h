@@ -11,4 +11,3 @@ public:
   virtual int GetMinWeight() = 0;
   std::string GetAlgName() { return algName; };
 };
-
