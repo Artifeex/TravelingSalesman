@@ -21,8 +21,6 @@ void LittleAlg::HandleMatrix(const AdjacencyMatrixG<int>& m,
     CandidateSolution(resultPath);
     return;
   }
-
-
   //1. Производим редукцию матрицы и считаем нижнюю границу
    auto matrix(m);
   if (bottomLimit == 0) {
@@ -38,7 +36,6 @@ void LittleAlg::HandleMatrix(const AdjacencyMatrixG<int>& m,
     ReduceMatrix(matrix);
   }
 
-  //std::cout << "MatrixAfterReduce: " << matrix << std::endl;
 
   //2. Сравниваем текущую нижнюю границу с record. Здесь можно будет откинуть плохие ветки
   if (bottomLimit > curRecord) {
@@ -68,7 +65,7 @@ void LittleAlg::HandleMatrix(const AdjacencyMatrixG<int>& m,
 
   //3. Добавляем бесконечность противоположному ребру, чтобы избежать цикла
   AddInfinity(hasEdgeMatrix);
-  //std::cout << "hasEdgeMatrix: " << hasEdgeMatrix << std::endl;
+
   
   //4.Запускаем обработку для новой ветки, содержащей ребро
   HandleMatrix(hasEdgeMatrix, newPath, bottomLimit, true);
@@ -80,6 +77,7 @@ void LittleAlg::HandleMatrix(const AdjacencyMatrixG<int>& m,
 
   //2. Считаем штраф за неиспользование ребра
   int fine = CalculateCoeff(noEdgeMatrix, maxZeroCoefRow, maxZeroCoefColumn);
+
   if (fine == infinity)
     return;
   //3. Ставим бесконечность для того ребра, которое мы не будем брать
@@ -195,6 +193,21 @@ void LittleAlg::CandidateSolution(const std::list<pair<int, int> >& curSolution)
 void LittleAlg::ConvertResult() {
   bestOrder.push_back(0);
   solution = curRecord;
+
+  while (!bestTreePath.empty()) {
+    auto iter = bestTreePath.begin();
+    while (iter != bestTreePath.end()) {
+      if (iter->first == bestOrder.back()) {
+        bestOrder.push_back(iter->second);
+        iter = bestTreePath.erase(iter);
+      }
+      else {
+        ++iter;
+      }
+    }
+  }
+
+  /*
   while (bestOrder.size() != matrix.GetCountVertices() + 1) {
     for (const auto& edge : bestTreePath) {
       if (edge.first == bestOrder.back())
@@ -203,6 +216,7 @@ void LittleAlg::ConvertResult() {
       }
     }
   }
+  */
 }
 
 void LittleAlg::AddInfinity(AdjacencyMatrixG<int>& m)
