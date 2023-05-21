@@ -1,6 +1,6 @@
 #include "ImprovedNearestNeighboor.h"
 
-int ImprovedNearestNeighboor::FindMinDistanceVert(int vert, const std::vector<bool> tmpVisitedVert)
+int ImprovedNearestNeighboor::FindMinDistanceVert(int vert, const std::vector<bool>& tmpVisitedVert)
 {
   int minRoute = INT_MAX;
   int minVert = -1;
@@ -33,10 +33,11 @@ void ImprovedNearestNeighboor::Run()
     std::vector<bool> tmpVisitedVert(countVert, false);
     tmpVisitedOrder[0] = startVert;
     tmpVisitedVert[i] = true;
-    for (size_t j = 1; j < countVert; j++)
+    for (size_t i = 1; i < countVert; i++)
     {
       int nextVert = FindMinDistanceVert(currentVert, tmpVisitedVert);
-      tmpVisitedOrder[j] = nextVert;
+      tmpVisitedVert[nextVert] = true;
+      tmpVisitedOrder[i] = nextVert;
       minPath += matrix[currentVert][nextVert];
       currentVert = nextVert;
     }

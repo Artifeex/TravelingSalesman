@@ -10,8 +10,9 @@ private:
   std::vector<bool> visitedVert;
   std::vector<int> visitedOrder;
   int bestResult = INT_MAX;
+  int inifinity = INT_MAX;
 
-  int FindMinDistanceVert(int vert, const std::vector<bool> tmpVisitedOrder);
+  int FindMinDistanceVert(int vert, const std::vector<bool>& tmpVisitedVert);
 public:
   ImprovedNearestNeighboor(const AdjacencyMatrixG<int>& matr): matrix(matr) {
     visitedVert.resize(matr.GetCountVertices());

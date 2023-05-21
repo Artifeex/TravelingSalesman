@@ -40,7 +40,7 @@ private:
 public:
   LittleAlg(const AdjacencyMatrixG<int>& m, int _record) : matrix(m),
     curRecord(_record) {
-    algName = "Branch and bound";
+    algName = "Ветвей и границ";
   }
 
   

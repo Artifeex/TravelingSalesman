@@ -28,6 +28,13 @@ double totalPheromone = 1.0;
 int countIterations = 5;
 
 
+//ѕараметры генерации
+int minBound = 10;
+int maxBound = 100;
+bool isSymmetric = false;
+int demension = 10;
+
+
 enum class Algs
 {
   bruteForce=0,
@@ -230,6 +237,33 @@ double TestAlg(Algorithm* alg) {
   return time;
 }
 
+vector<double> ExperimentByTime(const vector<Algorithm*>& algs) {
+
+  int n_min = 3;
+  int n_max = 15;
+  int step = 1;
+  vector<vector<double>> times;
+  cout << "¬ведите начальное число вершин: ";
+  cin >> n_min;
+  cout << "¬ведите конечное число вершин: ";
+  cin >> n_max;
+  cout << "¬ведите шаг, \
+	с котором число вершин будет увеличиватьс€ от начального числа до конечного: ";
+  cin >> step;
+
+  for (int n = n_min; n <= n_max; n += step) {
+	AdjacencyMatrixG<int>* matr = GenerateMatrix(isSymmetric, n, minBound, maxBound);
+	vector<double> tmpTime;
+	for (Algorithm* alg : algs) {
+	  if (alg != nullptr) {
+
+	  }
+	}
+  }
+
+
+}
+
 void SaveResultsAfterTestAlgs(const vector<Algorithm*>& algs, vector<double> times) {
   int choice;
   string path;
@@ -262,11 +296,7 @@ void SaveResultsAfterTestAlgs(const vector<Algorithm*>& algs, vector<double> tim
 int main(int argc, char* argv[])
 {
   srand(3);
-  //ѕараметры генерации
-  int minBound = 10;
-  int maxBound = 100;
-  bool isSymmetric = false;
-  int demension = 10;
+
 
   //јлгоритмы
   vector<Algorithm*> algs(COUNT_ALGS, nullptr);
@@ -358,9 +388,20 @@ int main(int argc, char* argv[])
 		SaveResultsAfterTestAlgs(algs, times);
 		break;
 	  }
-	case 8:
+	case 8://Ёксперимент
+	  cout << "¬ыберите тип эксперимента: " << endl;
+	  cout << "1)Ёксперимент по изучению времени работы" << endl;
+	  cout << "2)Ёксперимент по изучению результата работы" << endl;
+	  cin >> choice;
+	  if (choice == 1) {
 
-	  //Ёксперимент и предложение сохранить результаты
+	  }
+	  else if (choice == 2) {
+
+	  }
+	  else {
+		cout << "ќшибка выбора типа эксперимента" << endl;
+	  }
 	  break;
 	case 0: //«авершение работы программы
 	  exit(1);

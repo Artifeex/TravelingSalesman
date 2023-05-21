@@ -10,6 +10,7 @@ namespace ts
   {
   public:
 	static double TestAlg(Algorithm* alg, int& weight, std::vector<int>& route);
+	static double TestAlg(Algorithm* alg);
   };
 }
 

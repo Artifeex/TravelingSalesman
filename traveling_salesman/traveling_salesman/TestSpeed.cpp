@@ -10,4 +10,10 @@ namespace ts
 	route = alg->GetMinRoute();
 	return t.elapsed();
   }
+  double TestSpeed::TestAlg(Algorithm* alg)
+  {
+	Timer t;
+	alg->Run();
+	return t.elapsed();
+  }
 }

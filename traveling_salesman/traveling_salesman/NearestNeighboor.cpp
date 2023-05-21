@@ -30,6 +30,7 @@ void NearestNeighboor::Run()
   for (size_t i = 1; i < countVert; i++)
   {
     int nextVert = FindMinDistanceVert(currentVert);
+    visitedVert[nextVert] = true;
     visitedOrder[i] = nextVert;
     minPath += matrix[currentVert][nextVert];
     currentVert = nextVert;
