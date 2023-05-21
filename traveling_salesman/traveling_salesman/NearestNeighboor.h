@@ -18,11 +18,13 @@ public:
     matrix(matr), startVert(_startVert) {
     visitedVert.resize(matr.GetCountVertices());
     visitedOrder.resize(matr.GetCountVertices(), false);
+    algName = "Ближайшего соседа";
   }
   NearestNeighboor(const Matrix<int>& m, int _startVert = 0):
     matrix(m), startVert(_startVert) {
     visitedVert.resize(matrix.GetCountVertices());
     visitedOrder.resize(matrix.GetCountVertices(), false);
+    algName = "Ближайшего соседа";
   }
   void Run() override;
   int GetMinWeight() override { return minPath; }

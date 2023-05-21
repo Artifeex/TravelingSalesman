@@ -10,11 +10,11 @@ class LittleAlg: public Algorithm
 {
 private:
   AdjacencyMatrixG<int> matrix;
-  int infinity = INT_MAX;
+  int infinity = INT_MAX - 1;
   int curRecord;
   std::vector<int> bestOrder;
   std::list<pair<int, int>> bestTreePath;
-  int solution = INT_MAX;
+  int solution = INT_MAX - 1;
 
   void HandleMatrix(const AdjacencyMatrixG<int>& m,
     const std::list<pair<int, int> >& currentPath, int bottomLimit, bool hasAdje);
@@ -39,7 +39,9 @@ private:
   void AddInfinity(AdjacencyMatrixG<int>& m);
 public:
   LittleAlg(const AdjacencyMatrixG<int>& m, int _record) : matrix(m),
-    curRecord(_record) {}
+    curRecord(_record) {
+    algName = "Branch and bound";
+  }
 
   
   void Run() override;

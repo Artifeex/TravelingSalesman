@@ -39,14 +39,14 @@ BruteForceAlg::BruteForceAlg(const AdjacencyMatrixG<int>& m)
 {
   matrix = m;
   shortestValuePath = INT_MAX;
-  algName = "BruteForceAlg";
+  algName = "Полный перебор";
 }
 
 BruteForceAlg::BruteForceAlg(const Matrix<int>& m)
 {
   matrix = m;
   shortestValuePath = INT_MAX;
-  algName = "BruteForceAlg";
+  algName = "Полный перебор";
 }
 
 int BruteForceAlg::GetMinWeight()

@@ -9,8 +9,7 @@ namespace ts
   class TestSpeed
   {
   public:
-	static double TestAlg(Algorithm* alg);
-	static void CompareAlgs(Algorithm* alg1, Algorithm* alg2);
+	static double TestAlg(Algorithm* alg, int& weight, std::vector<int>& route);
   };
 }
 

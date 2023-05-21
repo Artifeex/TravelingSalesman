@@ -80,9 +80,10 @@ void LittleAlg::HandleMatrix(const AdjacencyMatrixG<int>& m,
 
   //2. Считаем штраф за неиспользование ребра
   int fine = CalculateCoeff(noEdgeMatrix, maxZeroCoefRow, maxZeroCoefColumn);
-
+  if (fine == infinity)
+    return;
   //3. Ставим бесконечность для того ребра, которое мы не будем брать
-  noEdgeMatrix[maxZeroCoefRow][maxZeroCoefColumn] = infinity;
+  noEdgeMatrix[maxZeroCoefRow][maxZeroCoefColumn] = infinity + 1;
 
   //4. Вызываем обработку для ветки, которая не содержит ребро 
   HandleMatrix(noEdgeMatrix, currentPath, bottomLimit + fine, false);

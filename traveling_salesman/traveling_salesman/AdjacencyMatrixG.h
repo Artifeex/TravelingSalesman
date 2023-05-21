@@ -78,7 +78,10 @@ public:
 
 
   //Нужны для алгоритма Литтла
-  void RemoveRowColumn(int row, int column) { m.RemoveRowColumn(row, column); };
+  void RemoveRowColumn(int row, int column) { 
+	m.RemoveRowColumn(row, column); 
+	countVertices--;
+  };
   int RowIndex(int index) const
   { 
 	return m.RowIndex(index);
