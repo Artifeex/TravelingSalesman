@@ -38,12 +38,11 @@ private:
 
   void AddInfinity(AdjacencyMatrixG<int>& m);
 public:
-  LittleAlg(const AdjacencyMatrixG<int>& m, int _record) : matrix(m),
-    curRecord(_record) {
+  LittleAlg(int _record): curRecord(_record) {
     algName = "Ветвей и границ";
   }
 
-  
+  void SetMatrix(const AdjacencyMatrixG<int>& m) override;
   void Run() override;
   int GetMinWeight() override { return solution; }
   std::vector<int> GetMinRoute() override { return bestOrder; }

@@ -156,25 +156,13 @@ void AntColonyAlg::Run()
   }
 }
 
-AntColonyAlg::AntColonyAlg(const AdjacencyMatrixG<int>& adjacencyMatr, double _alfa, double _beta,
-  double _startPheromone, double _Q, int _countAnts,
-  double _pheromoneResidue, double _pheromoneConst, int _countIterations) :matrix(adjacencyMatr.GetCountVertices())
+void AntColonyAlg::SetMatrix(const AdjacencyMatrixG<int>& adjacencyMatr)
 {
-  alfa = _alfa;
-  beta = _beta;
-  _startPheromone = _startPheromone;
-  closConst = _Q;
-  countIterations = _countIterations;
-  countAnts = _countAnts;
-  pheromoneResidue = _pheromoneResidue;
-  pheromoneConst = _pheromoneConst;
-  algName = "Муравьиный алгоритм";
+  matrix = AdjacencyMatrixG<AntColonyCell>(adjacencyMatr.GetCountVertices());
   countVertecies = adjacencyMatr.GetCountVertices();
   visitedVertecies.resize(countVertecies);
-  antRoute.resize(countAnts);
-  minWeightRoute = INT_MAX;
   weightIndex = countVertecies + 1;
-  for (size_t i = 0; i < countAnts; i++) 
+  for (size_t i = 0; i < countAnts; i++)
 	antRoute[i].resize(weightIndex + 1); // + 1 из-за доп вершины в замыкании
 
   for (size_t i = 0; i < adjacencyMatr.GetCountVertices(); i++)
@@ -185,12 +173,30 @@ AntColonyAlg::AntColonyAlg(const AdjacencyMatrixG<int>& adjacencyMatr, double _a
 		matrix[i][j] = AntColonyCell(DBL_MAX, 0.0, INT_MAX);
 	  else
 	  {
-		matrix[i][j] = AntColonyCell(closConst / adjacencyMatr[i][j], _startPheromone, adjacencyMatr[i][j]);
-		matrix[j][i] = AntColonyCell(closConst / adjacencyMatr[j][i], _startPheromone, adjacencyMatr[j][i]);
+		matrix[i][j] = AntColonyCell(closConst / adjacencyMatr[i][j], startPheromone, adjacencyMatr[i][j]);
+		matrix[j][i] = AntColonyCell(closConst / adjacencyMatr[j][i], startPheromone, adjacencyMatr[j][i]);
 	  }
-		
+
 	}
   }
+}
+
+AntColonyAlg::AntColonyAlg(double _alfa, double _beta,
+  double _startPheromone, double _Q, int _countAnts,
+  double _pheromoneResidue, double _pheromoneConst, int _countIterations)
+{
+  alfa = _alfa;
+  beta = _beta;
+  startPheromone = _startPheromone;
+  closConst = _Q;
+  countIterations = _countIterations;
+  countAnts = _countAnts;
+  pheromoneResidue = _pheromoneResidue;
+  pheromoneConst = _pheromoneConst;
+  algName = "Муравьиный алгоритм";
+  
+  antRoute.resize(countAnts);
+  minWeightRoute = INT_MAX;
 }
 
 void AntColonyAlg::UpdateBestRoute()

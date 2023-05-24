@@ -14,16 +14,13 @@ private:
 
   int FindMinDistanceVert(int vert, const std::vector<bool>& tmpVisitedVert);
 public:
-  ImprovedNearestNeighboor(const AdjacencyMatrixG<int>& matr): matrix(matr) {
-    visitedVert.resize(matr.GetCountVertices());
-    visitedOrder.resize(matr.GetCountVertices(), false);
+  ImprovedNearestNeighboor() {
     algName = "Улучшенный ближайшего соседа";
   }
-  ImprovedNearestNeighboor(const Matrix<int>& m): matrix(m) {
-    visitedVert.resize(matrix.GetCountVertices());
-    visitedOrder.resize(matrix.GetCountVertices(), false);
-    algName = "Улучшенный ближайшего соседа";
-  }
+
+  void SetMatrix(const AdjacencyMatrixG<int>& matr) override;
+  void SetMatrix(const Matrix<int>& m);
+
   void Run() override;
   int GetMinWeight() override { return bestResult; }
   std::vector<int> GetMinRoute() override { return visitedOrder; }

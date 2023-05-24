@@ -21,6 +21,26 @@ int NearestNeighboor::FindMinDistanceVert(int vert)
   return minVert;
 }
 
+void NearestNeighboor::SetMatrix(const AdjacencyMatrixG<int>& matr)
+{
+  matrix = matr;
+  minPath = 0;
+  visitedOrder.clear();
+  visitedVert.clear();
+  visitedVert.resize(matr.GetCountVertices(), false);
+  visitedOrder.resize(matr.GetCountVertices());
+}
+
+void NearestNeighboor::SetMatrix(const Matrix<int>& m)
+{
+  matrix = m;
+  minPath = 0;
+  visitedOrder.clear();
+  visitedVert.clear();
+  visitedVert.resize(matrix.GetCountVertices());
+  visitedOrder.resize(matrix.GetCountVertices(), false);
+}
+
 void NearestNeighboor::Run()
 {
   int currentVert = startVert;

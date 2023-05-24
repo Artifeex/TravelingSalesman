@@ -1,5 +1,14 @@
 #include "LittleAlg.h"
 
+void LittleAlg::SetMatrix(const AdjacencyMatrixG<int>& m)
+{
+  matrix = m;
+  curRecord = INT_MAX - 1;
+  solution = INT_MAX - 1;
+  bestOrder.clear();
+  bestTreePath.clear();
+}
+
 void LittleAlg::Run() {
   std::list<pair<int, int>> curPath;
   HandleMatrix(matrix, curPath, 0, true);

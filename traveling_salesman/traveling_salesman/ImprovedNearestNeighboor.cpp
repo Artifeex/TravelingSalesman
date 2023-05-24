@@ -21,6 +21,23 @@ int ImprovedNearestNeighboor::FindMinDistanceVert(int vert, const std::vector<bo
   return minVert;
 }
 
+void ImprovedNearestNeighboor::SetMatrix(const AdjacencyMatrixG<int>& matr)
+{
+  matrix = matr;
+  visitedOrder.clear();
+  visitedVert.clear();
+  visitedVert.resize(matr.GetCountVertices(), false);
+  visitedOrder.resize(matr.GetCountVertices());
+  bestResult = INT_MAX;
+}
+
+void ImprovedNearestNeighboor::SetMatrix(const Matrix<int>& m)
+{
+  matrix = m;
+  visitedVert.resize(matrix.GetCountVertices());
+  visitedOrder.resize(matrix.GetCountVertices(), false);
+}
+
 void ImprovedNearestNeighboor::Run()
 {
   for (size_t i = 0; i < matrix.GetCountVertices(); i++)

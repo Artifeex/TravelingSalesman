@@ -35,19 +35,26 @@ void BruteForceAlg::Run()
 	}while (std::next_permutation(curRoad.begin(), curRoad.end()));
 }
 
-BruteForceAlg::BruteForceAlg(const AdjacencyMatrixG<int>& m)
+void BruteForceAlg::SetMatrix(const AdjacencyMatrixG<int>& m)
 {
   matrix = m;
+  shortestValuePath = INT_MAX;
+  shortestPath.clear();
+}
+
+void BruteForceAlg::SetMatrix(const Matrix<int>& m)
+{
+  matrix = m;
+  shortestValuePath = INT_MAX;
+  shortestPath.clear();
+}
+
+BruteForceAlg::BruteForceAlg()
+{
   shortestValuePath = INT_MAX;
   algName = "Полный перебор";
 }
 
-BruteForceAlg::BruteForceAlg(const Matrix<int>& m)
-{
-  matrix = m;
-  shortestValuePath = INT_MAX;
-  algName = "Полный перебор";
-}
 
 int BruteForceAlg::GetMinWeight()
 {

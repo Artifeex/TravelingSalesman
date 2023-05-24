@@ -13,6 +13,7 @@ private:
   double beta; //Влияние близости вершины на выбор муравья
   double pheromoneResidue; // сколько феромона остается после конца итерации
   int countAnts;
+  int startPheromone;
   int countVertecies;
   std::vector<int> visitedVertecies; // для определения доступных вершин для выбора муравья
   std::vector<std::vector<int>> antRoute;// для отслеживания путей, по который ходили муравьи для обн-я фер-на
@@ -52,7 +53,10 @@ private:
 
 public:
   void Run() override;
-  AntColonyAlg(const AdjacencyMatrixG<int>& matrix, double _alfa=1, double _beta = 2,
+
+  void SetMatrix(const AdjacencyMatrixG<int>& adjacencyMatr) override;
+
+  AntColonyAlg(double _alfa=1, double _beta = 2,
 	double _startPheromone = 0.2, double _closConst = 1, int _countAnts = 12, 
 	double _pheromoneResidue = 0.3, double _pheromoneConst = 1, int _countIterations = 1);
   int GetMinWeight() override;

@@ -10,8 +10,10 @@ private:
   int shortestValuePath = INT_MAX;
 public:
   void Run() override;
-  BruteForceAlg(const AdjacencyMatrixG<int>& m);
-  BruteForceAlg(const Matrix<int>& m);
+
+  void SetMatrix(const AdjacencyMatrixG<int>& m) override;
+  void SetMatrix(const Matrix<int>& m);
+  BruteForceAlg();
   int GetMinWeight() override;
   std::vector<int> GetMinRoute() override;
   void SetNameAlg(std::string _nameAlg);
