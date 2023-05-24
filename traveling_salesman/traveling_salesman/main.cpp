@@ -80,7 +80,27 @@ void GenerationPreference(bool& isSymetric, int& dem, int& minBound, int& maxBou
 
 //‘ункци€ общени€ с пользователем, котора€ занимаетс€ сбором параметров дл€ муравьиного алгоритма
 void GetParamsAntColonyAlg() {
-
+  cout << "¬ведите значение параметра alfa: ";
+  cin >> alfa;
+  cout << endl;
+  cout << "¬ведите значение параметра beta: ";
+  cin >> beta;
+  cout << endl;
+  cout << "¬ведите значение начального значени€ феромона на каждой грани: ";
+  cin >> startPheromone;
+  cout << endl;
+  cout << "¬ведите количество муравьев: ";
+  cin >> countAnts;
+  cout << endl;
+  cout << "¬ведите значение параметры убывани€ феромона между итераци€ми: ";
+  cin >> pheromoneResidue;
+  cout << endl;
+  cout << "¬ведите значение феромона, который суммарно выдел€етс€ в одной итерации: ";
+  cin >> totalPheromone;
+  cout << endl;
+  cout << "¬ведите число итераций: ";
+  cin >> countIterations;
+  cout << endl;
 }
 
 int GenerateNum(int minBound, int maxBound) {
@@ -169,6 +189,7 @@ void ChoiceAlgs(vector<bool>& algs) {
 	  algs[static_cast<int>(Algs::bruteForce)] = true;
 	  break;
 	case 2:
+	  GetParamsAntColonyAlg();
 	  algs[static_cast<int>(Algs::ant)] = true;
 	  break;
 	case 3:
