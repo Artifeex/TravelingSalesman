@@ -2,7 +2,7 @@
 #include "Algorithm.h"
 #include "AdjacencyMatrixG.h"
 #include <vector>
-
+//O(n^3)
 class ImprovedNearestNeighboor: public Algorithm
 {
 private:

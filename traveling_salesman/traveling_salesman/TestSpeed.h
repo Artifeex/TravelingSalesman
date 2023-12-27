@@ -1,6 +1,7 @@
 #pragma once
 #include "AntColonyAlg.h"
 #include "BruteForceAlg.h"
+#include "NearestNeighboor.h"
 #include <stdio.h> 
 #include <time.h> 
 #include "Timer.h"

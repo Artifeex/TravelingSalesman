@@ -151,6 +151,7 @@
     <ClInclude Include="NearestNeighboor.h" />
     <ClInclude Include="TestSpeed.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="TwoOpt.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AdjacencyMatrixG.cpp" />
@@ -166,6 +167,7 @@
     <ClCompile Include="NearestNeighboor.cpp" />
     <ClCompile Include="TestSpeed.cpp" />
     <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="TwoOpt.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

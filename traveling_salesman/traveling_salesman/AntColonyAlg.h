@@ -5,6 +5,7 @@
 #include <cmath>
 #include <float.h>
 //#include <valarray>
+//O(t * m * n^2) t Ц число итераций, m Ц количество муравьЄв, n Ц количество вершин в графе
 
 class AntColonyAlg : public Algorithm
 {

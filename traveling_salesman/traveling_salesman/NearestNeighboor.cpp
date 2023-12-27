@@ -43,18 +43,27 @@ void NearestNeighboor::SetMatrix(const Matrix<int>& m)
 
 void NearestNeighboor::Run()
 {
+  //Выбирае в качестве текущий вершины стартовую
   int currentVert = startVert;
+  //Получаем количество вершин
   int countVert = matrix.GetCountVertices();
+  //Добавляем стартовую вершину в пройденный путь
   visitedOrder[0] = startVert;
+  //Отмечаем стартовую вершину как посещенную
   visitedVert[0] = true;
   for (size_t i = 1; i < countVert; i++)
   {
+    //Находим следующую ближайшую вершину
     int nextVert = FindMinDistanceVert(currentVert);
+    //Отмечаем ее как посещенную
     visitedVert[nextVert] = true;
+    //Добавляем ее в пройденный путь
     visitedOrder[i] = nextVert;
+    //Прибавляем стоимость перехода
     minPath += matrix[currentVert][nextVert];
     currentVert = nextVert;
   }
+  //Возвращаемся в стартовую вершину
   minPath += matrix[currentVert][startVert];
   visitedOrder.push_back(startVert);
 }

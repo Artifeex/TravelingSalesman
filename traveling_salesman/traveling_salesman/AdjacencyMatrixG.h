@@ -4,7 +4,7 @@
 #include <fstream>
 
 template<class T>
-class AdjacencyMatrixG final: public Graph<T>
+class AdjacencyMatrixG final : public Graph<T>
 {
 private:
   Matrix<T> m;
@@ -14,51 +14,51 @@ public:
   AdjacencyMatrixG(const Matrix<T>& matrix);
   AdjacencyMatrixG()
   {
-	countVertices = 0;
+    countVertices = 0;
   }
 
   int GetCountRows() const
-  { 
-	return m.GetCountRows(); 
+  {
+    return m.GetCountRows();
   }
   int GetCountColumns() const
-  { 
-	return m.GetCountColumns(); 
+  {
+    return m.GetCountColumns();
   }
 
   void GenerateByRandom(T(*RandomFunc)(int i, int j)) override
   {
-	if (countVertices <= 0)
-	  throw std::string("count vertices <= 0");
+    if (countVertices <= 0)
+      throw std::string("count vertices <= 0");
 
-	for (size_t i = 0; i < countVertices; i++)
-	{
-	  for (size_t j = 0; j < countVertices; j++)
-	  {
-		m[i][j] = RandomFunc(i, j);
-	  }
-	}
+    for (size_t i = 0; i < countVertices; i++)
+    {
+      for (size_t j = 0; j < countVertices; j++)
+      {
+        m[i][j] = RandomFunc(i, j);
+      }
+    }
   }
 
   void MakeByFile(const std::string& filePath) override
   {
-	std::ifstream file(filePath);
-	if (file.is_open())
-	{
-	  try
-	  {
-		//file >> m;
-	  }
-	  catch (const std::exception&)
-	  {
-		std::cout << std::string("something bad happened");
-		file.close();
-		return;
-	  }
-	  countVertices = m.GetCountRows();
-	}
-	else
-	  throw std::string("Не удалось открыть файл!");
+    std::ifstream file(filePath);
+    if (file.is_open())
+    {
+      try
+      {
+        //file >> m;
+      }
+      catch (const std::exception&)
+      {
+        std::cout << std::string("something bad happened");
+        file.close();
+        return;
+      }
+      countVertices = m.GetCountRows();
+    }
+    else
+      throw std::string("Не удалось открыть файл!");
   }
 
   void AddVertex(T& infinityValue);
@@ -72,33 +72,33 @@ public:
 
   friend std::ostream& operator<<(std::ostream& out, const AdjacencyMatrixG<T>& matr)
   {
-	out << matr.m;
-	return out;
+    out << matr.m;
+    return out;
   }
 
 
   //Нужны для алгоритма Литтла
-  void RemoveRowColumn(int row, int column) { 
-	m.RemoveRowColumn(row, column); 
-	countVertices--;
+  void RemoveRowColumn(int row, int column) {
+    m.RemoveRowColumn(row, column);
+    countVertices--;
   };
   int RowIndex(int index) const
-  { 
-	return m.RowIndex(index);
+  {
+    return m.RowIndex(index);
   }
   int ColumnIndex(int index) const
-  { 
-	return m.ColumnIndex(index);
+  {
+    return m.ColumnIndex(index);
   }
 };
 
 template<class T>
-inline AdjacencyMatrixG<T>::AdjacencyMatrixG(int _countVertices): m(_countVertices, _countVertices)
+inline AdjacencyMatrixG<T>::AdjacencyMatrixG(int _countVertices) : m(_countVertices, _countVertices)
 {
   countVertices = _countVertices;
-  
+
   if (countVertices <= 0)
-	throw std::string("Bad value of count vertices!");
+    throw std::string("Bad value of count vertices!");
 }
 
 template<class T>
@@ -115,7 +115,7 @@ inline void AdjacencyMatrixG<T>::AddVertex(T& infinityValue)
   std::vector<T> values;
   for (size_t i = 0; i < countVertices; i++)
   {
-	values.push_back(infinityValue);
+    values.push_back(infinityValue);
   }
   m.AddRow(values);
 }
@@ -126,8 +126,8 @@ inline void AdjacencyMatrixG<T>::AddVertex(const std::vector<T>& adjacencyValues
   countVertices++;
   if (adjacencyValues.size() == countVertices)
   {
-	m.AddRow(adjacencyValues);
-	m.AddColumn(adjacencyValues);
+    m.AddRow(adjacencyValues);
+    m.AddColumn(adjacencyValues);
   }
 }
 

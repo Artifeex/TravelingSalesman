@@ -5,6 +5,7 @@
 #include "TestSpeed.h"
 #include "NearestNeighboor.h"
 #include "ImprovedNearestNeighboor.h"
+#include "TwoOpt.h"
 #include "LittleAlg.h"
 #include <random>
 #include <fstream>
@@ -16,7 +17,7 @@ using std::endl;
 using std::string;
 using std::vector;
 
-const int COUNT_ALGS = 5;
+const int COUNT_ALGS = 6;
 
 //Параметры Муравьиного алгоритма
 double alfa = 1.0;
@@ -36,11 +37,12 @@ int dimension = 10;
 
 enum class Algs
 {
-  bruteForce=0,
-  ant=1,
-  nearNeigh=2,
-  upNearNeigh=3,
-  bounds=4
+  bruteForce = 0,
+  ant = 1,
+  nearNeigh = 2,
+  upNearNeigh = 3,
+  bounds = 4,
+  opt = 5
 };
 
 void ShowMenu() {
@@ -60,11 +62,11 @@ void GenerationPreference(bool& isSymetric, int& dem, int& minBound, int& maxBou
   int choice = 0;
   cout << "Симметричная ?(1 - Да, 2 - Нет): ";
   cin >> choice;
-  if (choice) {
-	isSymetric = true;
+  if (choice == 1) {
+    isSymetric = true;
   }
   else {
-	isSymetric = false;
+    isSymetric = false;
   }
   cout << endl;
   cout << "Размерность матрицы: ";
@@ -108,7 +110,6 @@ int GenerateNum(int minBound, int maxBound) {
   std::mt19937 generator(random_device());
   std::uniform_int_distribution<> distribution(minBound, maxBound);
   return distribution(generator);
-  //return rand() % (maxBound - minBound) + minBound;
 }
 
 AdjacencyMatrixG<int>* GenerateMatrix(bool isSymetric, int dem, int minBound, int maxBound) {
@@ -116,34 +117,34 @@ AdjacencyMatrixG<int>* GenerateMatrix(bool isSymetric, int dem, int minBound, in
   matrix.resize(dem);
   for (size_t i = 0; i < dem; i++)
   {
-	matrix[i].resize(dem);
+    matrix[i].resize(dem);
   }
   for (size_t i = 0; i < dem; i++)
   {
-	if (isSymetric) {
-	  for (size_t j = i; j < dem; j++)
-	  {
-		if (i == j) {
-		  matrix[i][j] = INT_MAX - 1;
-		}
-		else {
-		  int generatedValue = GenerateNum(minBound, maxBound);
-		  matrix[i][j] = generatedValue;
-		  matrix[j][i] = generatedValue;
-		}
-	  }
-	}
-	else {
-	  for (size_t j = 0; j < dem; j++)
-	  {
-		if (i == j) {
-		  matrix[i][j] = INT_MAX - 1;
-		}
-		else {
-		  matrix[i][j] = GenerateNum(minBound, maxBound);
-		}
-	  }
-	}
+    if (isSymetric) {
+      for (size_t j = i; j < dem; j++)
+      {
+        if (i == j) {
+          matrix[i][j] = INT_MAX - 1;
+        }
+        else {
+          int generatedValue = GenerateNum(minBound, maxBound);
+          matrix[i][j] = generatedValue;
+          matrix[j][i] = generatedValue;
+        }
+      }
+    }
+    else {
+      for (size_t j = 0; j < dem; j++)
+      {
+        if (i == j) {
+          matrix[i][j] = INT_MAX - 1;
+        }
+        else {
+          matrix[i][j] = GenerateNum(minBound, maxBound);
+        }
+      }
+    }
   }
   return new AdjacencyMatrixG<int>(matrix);
 }
@@ -154,11 +155,11 @@ AdjacencyMatrixG<int>* ReadMatrixFromFile(string filePath, int dimension) {
   matrix.resize(dimension);
   for (size_t i = 0; i < dimension; i++)
   {
-	matrix[i].resize(dimension);
-	for (size_t j = 0; j < dimension; j++)
-	{
-	  file >> matrix[i][j];
-	}
+    matrix[i].resize(dimension);
+    for (size_t j = 0; j < dimension; j++)
+    {
+      file >> matrix[i][j];
+    }
   }
   file.close();
   return new AdjacencyMatrixG<int>(matrix);
@@ -180,34 +181,38 @@ void ChoiceAlgs(vector<bool>& algs) {
   cout << "3) Ближайшего соседа" << endl;
   cout << "4) Модернизированный алгоритм ближайшего соседа" << endl;
   cout << "5) Метод ветвей и границ" << endl;
+  cout << "6) Метод 2-opt" << endl;
   while (!isExit) {
-	cout << "Выберите алгоритм(для выхода введите 0): " << endl;
-	cin >> choice;
-	switch (choice)
-	{
-	case 1:
-	  algs[static_cast<int>(Algs::bruteForce)] = true;
-	  break;
-	case 2:
-	  GetParamsAntColonyAlg();
-	  algs[static_cast<int>(Algs::ant)] = true;
-	  break;
-	case 3:
-	  algs[static_cast<int>(Algs::nearNeigh)] = true;
-	  break;
-	case 4:
-	  algs[static_cast<int>(Algs::upNearNeigh)] = true;
-	  break;
-	case 5:
-	  algs[static_cast<int>(Algs::bounds)] = true;
-	  break;
-	case 0:
-	  isExit = true;
-	  break;
-	default:
-	  cout << "Ошибка выбора алгоритма" << endl;
-	  break;
-	}
+    cout << "Выберите алгоритм(для выхода введите 0): " << endl;
+    cin >> choice;
+    switch (choice)
+    {
+    case 1:
+      algs[static_cast<int>(Algs::bruteForce)] = true;
+      break;
+    case 2:
+      GetParamsAntColonyAlg();
+      algs[static_cast<int>(Algs::ant)] = true;
+      break;
+    case 3:
+      algs[static_cast<int>(Algs::nearNeigh)] = true;
+      break;
+    case 4:
+      algs[static_cast<int>(Algs::upNearNeigh)] = true;
+      break;
+    case 5:
+      algs[static_cast<int>(Algs::bounds)] = true;
+      break;
+    case 6:
+      algs[static_cast<int>(Algs::opt)] = true;
+      break;
+    case 0:
+      isExit = true;
+      break;
+    default:
+      cout << "Ошибка выбора алгоритма" << endl;
+      break;
+    }
   }
 }
 
@@ -215,31 +220,34 @@ void CreateAlgs(vector<Algorithm*>& algs, vector<bool> algsBoolean) {
   algs.clear();
   algs.resize(COUNT_ALGS);
   for (int algsIndex = 0; algsIndex < COUNT_ALGS; algsIndex++) {
-	if (algsBoolean[algsIndex] == true) {
-	  switch (algsIndex)
-	  {
-	  case 0:
-		algs[0] = new BruteForceAlg();
-		break;
-	  case 1:
-		algs[1] = new AntColonyAlg(alfa, beta,
-		  startPheromone, constClosness, countAnts, pheromoneResidue,
-		  totalPheromone, countIterations);
-		break;
-	  case 2:
-		algs[2] = new NearestNeighboor();
-		break;
-	  case 3:
-		algs[3] = new ImprovedNearestNeighboor();
-		break;
-	  case 4:
-		algs[4] = new LittleAlg(INT_MAX - 1);
-		break;
-	  default:
-		cout << "Ошибка в создании алгоритмов!" << endl;
-		break;
-	  }
-	}
+    if (algsBoolean[algsIndex] == true) {
+      switch (algsIndex)
+      {
+      case 0:
+        algs[0] = new BruteForceAlg();
+        break;
+      case 1:
+        algs[1] = new AntColonyAlg(alfa, beta,
+          startPheromone, constClosness, countAnts, pheromoneResidue,
+          totalPheromone, countIterations);
+        break;
+      case 2:
+        algs[2] = new NearestNeighboor();
+        break;
+      case 3:
+        algs[3] = new ImprovedNearestNeighboor();
+        break;
+      case 4:
+        algs[4] = new LittleAlg(INT_MAX - 1);
+        break;
+      case 5:
+        algs[5] = new TwoOpt();
+        break;
+      default:
+        cout << "Ошибка в создании алгоритмов!" << endl;
+        break;
+      }
+    }
   }
 }
 
@@ -251,68 +259,105 @@ double TestAlg(Algorithm* alg) {
   cout << "Стоимость минимального найденного пути: " << weight << endl;
   cout << "Маршрут с минимального найденным путем: ";
   for (auto val : minRoute) {
-	cout << val << " ";
+    cout << val << " ";
   }
   cout << endl;
   cout << "Время работы: " << time << " c" << endl;
   return time;
 }
 
-void SaveResultsAfterExpByTime(const vector<Algorithm*>& algs,
-  const vector<vector<double>>& times, const vector<int>& dimensions) {
+void SaveResultsAfterExp(const vector<Algorithm*>& algs,
+  const vector<vector<double>>& results, const vector<int>& dimensions, bool isByTime) {
   int sizeAlgName = 30;
   int sizeDim = 7;
-  int sizeTime = 10;
+  int sizeResults = 10;
   int choice = 0;
-  std::cout << std::setw(sizeAlgName) <<std::left << "Algorithm" <<  std::setw(sizeDim) <<
-	"Dim" << std::setw(sizeTime) << "Time" << std::endl;
-
+  
+  std::cout << std::setw(sizeAlgName) << std::left << "Algorithm" << std::setw(sizeDim) <<
+    "Dim" << std::setw(sizeResults); 
+  if (isByTime) {
+    std::cout << "Time" << std::endl;
+  }
+  else {
+    cout << "Mean Value" << std::endl;
+  }
   for (size_t i = 0; i < COUNT_ALGS; i++)
   {
-	if (algs[i] != nullptr) {
-	  int k = 0;
-	  for (auto dim : dimensions) {
-		std::cout << std::setw(sizeAlgName) << std::left << algs[i]->GetAlgName()
-		  << std::setw(sizeDim) <<
-		  dim << std::setw(sizeTime) << times[i][k] << std::endl;
-		k++;
-	  }
-	}
+    if (algs[i] != nullptr) {
+      int k = 0;
+      for (auto dim : dimensions) {
+        std::cout << std::setw(sizeAlgName) << std::left << algs[i]->GetAlgName()
+          << std::setw(sizeDim) <<
+          dim << std::setw(sizeResults) << results[i][k] << std::endl;
+        k++;
+      }
+    }
   }
 
   std::cout << std::endl;
   std::cout << "Сохранить результаты в файл? (1-Да, 2-Нет)" << std::endl;
   cin >> choice;
   if (choice == 1) {
-	string filePath;
-	std::cout << "Введите название файла: " << std::endl;
-	cin >> filePath;
-	std::ofstream file(filePath);
-	file << std::setw(sizeAlgName) << std::left << "Algorithm" << std::setw(sizeDim) <<
-	  "Dim" << std::setw(sizeTime) << "Time" << std::endl;
-
-	for (size_t i = 0; i < COUNT_ALGS; i++)
-	{
-	  if (algs[i] != nullptr) {
-		int k = 0;
-		for (auto dim : dimensions) {
-		  file << std::setw(sizeAlgName) << std::left << algs[i]->GetAlgName()
-			<< std::setw(sizeDim) <<
-			dim << std::setw(sizeTime) << times[i][k] << std::endl;
-		  k++;
-		}
-	  }
-	}
-	file.close();
-	std::cout << "Результаты сохранены!" << std::endl;
+    string filePath;
+    std::cout << "Введите название файла: " << std::endl;
+    cin >> filePath;
+    std::ofstream file(filePath);
+    cout << endl;
+    cout << "Сохранить для таблицы Latex?(1 - Да, 2 - Нет)" << std::endl;
+    cin >> choice;
+    if (choice == 1) {
+      file << "Dim";
+      for (size_t i = 0; i < COUNT_ALGS; i++)
+      {
+        if (algs[i] != nullptr) {
+          file << " & " << algs[i]->GetAlgName();
+        }
+      }
+      file << endl;
+      for (size_t dim = 0; dim < dimensions.size(); dim++)
+      {
+        file << dimensions[dim];
+        for (size_t i = 0; i < COUNT_ALGS; i++)
+        {
+          if (algs[i] != nullptr) {
+            file << " & " << results[i][dim];
+          }
+        }
+        file << " \\\\" << endl;
+      }
+    }
+    else {
+      file << std::setw(sizeAlgName) << std::left << "Algorithm" << std::setw(sizeDim) <<
+        "Dim" << std::setw(sizeResults);
+      if (isByTime) {
+        cout << "Time" << std::endl;
+      }
+      else {
+        cout << "Mean Value" << std::endl;
+      }
+      for (size_t i = 0; i < COUNT_ALGS; i++)
+      {
+        if (algs[i] != nullptr) {
+          int k = 0;
+          for (auto dim : dimensions) {
+            file << std::setw(sizeAlgName) << std::left << algs[i]->GetAlgName()
+              << std::setw(sizeDim) <<
+              dim << std::setw(sizeResults) << results[i][k] << std::endl;
+            k++;
+          }
+        }
+      }
+      file.close();
+      std::cout << "Результаты сохранены!" << std::endl;
+    }
   }
   else if (choice == 2) {
-	return;
+    return;
   }
   else {
-	std::cout << "Ошибка!" << std::endl;
+    std::cout << "Ошибка!" << std::endl;
   }
-  
+
 }
 
 void SaveResultsAfterTestAlgs(const vector<Algorithm*>& algs, const vector<double>& times) {
@@ -321,106 +366,83 @@ void SaveResultsAfterTestAlgs(const vector<Algorithm*>& algs, const vector<doubl
   cout << "Сохранить результаты в файл?(1 - Да, 2 - Нет): ";
   cin >> choice;
   if (choice == 1) {
-	cout << endl;
-	cout << "Введите имя файла: ";
-	cin >> path;
-	cout << endl;
-	std::ofstream file(path);
-	for (size_t i = 0; i < COUNT_ALGS; i++)
-	{
-	  if (algs[i] != nullptr) {
-		file << "Алгоритм: " << algs[i]->GetAlgName() << endl;
-		file << "Стоимость минимального найденного пути: " << algs[i]->GetMinWeight() << endl;
-		file << "Маршрут с минимального найденным путем: ";
-		for (auto val : algs[i]->GetMinRoute()) {
-		  file << val << " ";
-		}
-		file << endl;
-		file << "Время работы: " << times[i] << " c" << endl;
-		file << endl;
-	  }
-	}
+    cout << endl;
+    cout << "Введите имя файла: ";
+    cin >> path;
+    cout << endl;
+    std::ofstream file(path);
+    for (size_t i = 0; i < COUNT_ALGS; i++)
+    {
+      if (algs[i] != nullptr) {
+        file << "Алгоритм: " << algs[i]->GetAlgName() << endl;
+        file << "Стоимость минимального найденного пути: " << algs[i]->GetMinWeight() << endl;
+        file << "Маршрут с минимального найденным путем: ";
+        for (auto val : algs[i]->GetMinRoute()) {
+          file << val << " ";
+        }
+        file << endl;
+        file << "Время работы: " << times[i] << " c" << endl;
+        file << endl;
+      }
+    }
   }
 }
 
-void SaveResultsAfterExpByRes(const vector<Algorithm*>& algs,
-  const vector<double>& results, int countExperiments) {
-  int sizeAlgName = 30;
-  int sizeDim = 7;
-  int sizeResults = 15;
-  int choice;
-
-  std::cout << "Число экспериментов: " << countExperiments << std::endl;
-  std::cout << std::setw(sizeAlgName) << std::left << "Algorithm" << std::setw(sizeDim) <<
-	"Dim" << std::setw(sizeResults) << "Solution Mean" << std::endl;
-
-  for (size_t algI = 0; algI < COUNT_ALGS; algI++)
-  {
-	if (algs[algI] != nullptr) {
-	  std::cout << std::setw(sizeAlgName) << std::left << algs[algI]->GetAlgName()
-		<< std::setw(sizeDim) <<
-		dimension << std::setw(sizeResults) << results[algI] << std::endl;
-	}
-  }
-
-  std::cout << std::endl;
-  std::cout << "Сохранить результаты в файл? (1-Да, 2-Нет)" << std::endl;
-  cin >> choice;
-  if (choice == 1) {
-	string filePath;
-	std::cout << "Введите название файла: " << std::endl;
-	cin >> filePath;
-	std::ofstream file(filePath);
-	file << "Число экспериментов: " << countExperiments << std::endl;
-	for (size_t algI = 0; algI < COUNT_ALGS; algI++)
-	{
-	  if (algs[algI] != nullptr) {
-		file << std::setw(sizeAlgName) << std::left << algs[algI]->GetAlgName()
-		  << std::setw(sizeDim) <<
-		  dimension << std::setw(sizeResults) << results[algI] << std::endl;
-	  }
-	}
-	file.close();
-	std::cout << "Результаты сохранены!" << std::endl;
-  }
-  else if (choice == 2) {
-	return;
-  }
-  else {
-	std::cout << "Ошибка!" << std::endl;
-  }
-}
 
 void ExperimentByResults(const vector<Algorithm*>& algs) {
+  int nMin = 10;
+  int nMax = 100;
+  int step = 10;
   int countExperiments = 5;
-  std::vector<double> results(COUNT_ALGS, 0);
+  vector<vector<double>> results(COUNT_ALGS);
+  vector<int> dimensions;
+  cout << "Введите начальное значение размерности матрицы: ";
+  cin >> nMin;
+  cout << std::endl;
+  cout << "Введите конечное значение размерности матрицы: ";
+  cin >> nMax;
+  cout << std::endl;
+  cout << "Введите значение шага увеличения размерности матрицы: ";
+  cin >> step;
+  cout << std::endl;
   cout << "Введите число экспериментов: ";
   cin >> countExperiments;
-  for (size_t experiment = 0; experiment < countExperiments; experiment++)
+  vector<double> expResults(COUNT_ALGS, 0.0);
+  for (size_t curN = nMin; curN <= nMax; curN += step)
   {
-	AdjacencyMatrixG<int>* matrix = GenerateMatrix(isSymmetric, dimension, minBound, maxBound);
-	for (size_t algI = 0; algI < COUNT_ALGS; algI++)
-	{
-	  if (algs[algI] != nullptr) {
-		algs[algI]->SetMatrix(*matrix);
-		algs[algI]->Run();
-		results[algI] += algs[algI]->GetMinWeight();
-	  }
-	}
+    dimensions.push_back(curN);
+    for (size_t i = 0; i < expResults.size(); i++)
+    {
+      expResults[i] = 0.0;
+    }
+    for (size_t experiment = 0; experiment < countExperiments; experiment++)
+    {
+      AdjacencyMatrixG<int>* matr = GenerateMatrix(isSymmetric, curN, minBound, maxBound);
+      for (size_t algI = 0; algI < COUNT_ALGS; algI++)
+      {
+        if (algs[algI] != nullptr) {
+          algs[algI]->SetMatrix(*matr);
+          algs[algI]->Run();
+          expResults[algI] += algs[algI]->GetMinWeight();
+        }
+      }
+      delete matr;
+    }
+    for (size_t algI = 0; algI < COUNT_ALGS; algI++)
+    {
+      if (algs[algI] != nullptr) {
+        results[algI].push_back(expResults[algI] / countExperiments);
+      }
+    }
   }
-
-  for (size_t i = 0; i < COUNT_ALGS; i++)
-  {
-	results[i] /= countExperiments;
-  }
-
-  SaveResultsAfterExpByRes(algs, results, countExperiments);
+  SaveResultsAfterExp(algs, results, dimensions, false);
 }
 
 void ExperimentByTime(const vector<Algorithm*>& algs) {
   int nMin = 10;
   int nMax = 100;
   int step = 10;
+  int countExperiments = 5;
   vector<vector<double>> times(COUNT_ALGS);
   vector<int> dimensions;
   cout << "Введите начальное значение размерности матрицы: ";
@@ -432,20 +454,38 @@ void ExperimentByTime(const vector<Algorithm*>& algs) {
   cout << "Введите значение шага увеличения размерности матрицы: ";
   cin >> step;
   cout << std::endl;
-  for (size_t curN = nMin; curN <= nMax; curN+=step) 
+  cout << "Введите число экспериментов: ";
+  cin >> countExperiments;
+  cout << std::endl;
+  vector<double> expTimes(COUNT_ALGS, 0.0);
+  for (size_t curN = nMin; curN <= nMax; curN += step)
   {
-	dimensions.push_back(curN);
-	AdjacencyMatrixG<int>* matr = GenerateMatrix(isSymmetric, curN, minBound, maxBound);
-	for (size_t algI = 0; algI < COUNT_ALGS; algI++)
-	{
-	  if (algs[algI] != nullptr) {
-		algs[algI]->SetMatrix(*matr);
-		times[algI].push_back(ts::TestSpeed::TestAlg(algs[algI]));
-	  }
-	}
+    dimensions.push_back(curN);
+    for (size_t i = 0; i < expTimes.size(); i++)
+    {
+      expTimes[i] = 0.0;
+    }
+    for (size_t experiment = 0; experiment < countExperiments; experiment++)
+    {
+      AdjacencyMatrixG<int>* matr = GenerateMatrix(isSymmetric, curN, minBound, maxBound);
+      for (size_t algI = 0; algI < COUNT_ALGS; algI++)
+      {
+        if (algs[algI] != nullptr) {
+          algs[algI]->SetMatrix(*matr);
+          expTimes[algI] += ts::TestSpeed::TestAlg(algs[algI]);
+        }
+      }
+      delete matr;
+    }
+    for (size_t algI = 0; algI < COUNT_ALGS; algI++)
+    {
+      if (algs[algI] != nullptr) {
+        times[algI].push_back(expTimes[algI]);
+      }
+    }
   }
-
-  SaveResultsAfterExpByTime(algs, times, dimensions);
+  std::cout << endl;
+  SaveResultsAfterExp(algs, times, dimensions, true);
 }
 
 
@@ -461,117 +501,117 @@ int main(int argc, char* argv[])
   string filePath;
   //Матрица
   AdjacencyMatrixG<int>* matrixPtr = nullptr;
-  
+
 
   setlocale(LC_ALL, "Russian");
   while (!isExit) {
-	ShowMenu();
-	cout << "Ваш выбор: ";
-	cin >> choice;
-	switch (choice)
-	{
-	case 1: // Вызов функции, отвечающей за работу с генерацией
-	  GenerationPreference(isSymmetric, dimension, minBound, maxBound);
-	  break;
-	case 2: // Генерация матрицы и вывод ее на экран
-	  matrixPtr = GenerateMatrix(isSymmetric, dimension, minBound, maxBound);
-	  cout << "Сгенерированная матрица: " << endl;
-	  cout << *matrixPtr;
-	  cout << endl;
-	  break;
-	case 3: //Считывание матрицы из файла
-	  cout << "Введите размерность матрицы: " << endl;
-	  cin >> dimension;
-	  cout << "Введите путь до файла: " << endl;
-	  //cin >> filePath;
-	  filePath = "input_matrix.txt";
-	  if (matrixPtr != nullptr) {
-		delete matrixPtr;
-	  }
-	  matrixPtr = ReadMatrixFromFile(filePath, dimension);
-	  cout << "Считанная матрица: " << endl;
-	  cout << *matrixPtr;
-	  cout << endl;
-	  break;
-	case 4: // Сохранить матрицу в файл
-	  if (matrixPtr == nullptr) {
-		cout << "Сначала задайте матрицу!" << endl;
-		break;
-	  }
-	  cout << "Введите название файла: " << endl;
-	  //cin >> filePath;
-	  filePath = "saved_matrix.txt";
-	  SaveMatrix(filePath, matrixPtr);
-	  break;
-	case 5: //Вывести матрицу на консоль
-	  if (matrixPtr == nullptr) {
-		cout << "Матрица отсутствует!" << endl;
-		break;
-	  }
-	  else {
-		cout << "Текущая матрица: " << endl;
-		cout << *matrixPtr;
-		cout << endl;
-	  }
-	  break;
-	case 6:
-	  algsBoolean.resize(COUNT_ALGS, false);
-	  //Функция выбора алгоритмов
-	  ChoiceAlgs(algsBoolean);
-	  break;
-	case 7:
-	  //Вычисление и вывод результатов + сохранить или не сохранить результаты
-	  if (matrixPtr == nullptr) {
-		cout << "Сначала задайте матрицу смежности!" << endl;
-		break;
-	  }
-	  else if (std::count_if(algsBoolean.begin(), algsBoolean.end(),
-		[](bool i) {return i; }) == 0) {
-		cout << "Не выбрано ни одного алгоритма!" << endl;
-		break;
-	  }
-	  else {
-		algs.resize(COUNT_ALGS, nullptr);
-		CreateAlgs(algs, algsBoolean);
-		vector<double> times(COUNT_ALGS, 0.0);
-		for (Algorithm* alg : algs) {
-		  if (alg != nullptr) {
-			alg->SetMatrix(*matrixPtr);
-			TestAlg(alg);
-		  }
-		}
-		SaveResultsAfterTestAlgs(algs, times);
-		break;
-	  }
-	case 8://Эксперимент
+    ShowMenu();
+    cout << "Ваш выбор: ";
+    cin >> choice;
+    switch (choice)
+    {
+    case 1: // Вызов функции, отвечающей за работу с генерацией
+      GenerationPreference(isSymmetric, dimension, minBound, maxBound);
+      break;
+    case 2: // Генерация матрицы и вывод ее на экран
+      matrixPtr = GenerateMatrix(isSymmetric, dimension, minBound, maxBound);
+      cout << "Сгенерированная матрица: " << endl;
+      cout << *matrixPtr;
+      cout << endl;
+      break;
+    case 3: //Считывание матрицы из файла
+      cout << "Введите размерность матрицы: " << endl;
+      cin >> dimension;
+      cout << "Введите путь до файла: " << endl;
+      //cin >> filePath;
+      filePath = "input_matrix.txt";
+      if (matrixPtr != nullptr) {
+        delete matrixPtr;
+      }
+      matrixPtr = ReadMatrixFromFile(filePath, dimension);
+      cout << "Считанная матрица: " << endl;
+      cout << *matrixPtr;
+      cout << endl;
+      break;
+    case 4: // Сохранить матрицу в файл
+      if (matrixPtr == nullptr) {
+        cout << "Сначала задайте матрицу!" << endl;
+        break;
+      }
+      cout << "Введите название файла: ";
+      cin >> filePath;
+      filePath = "saved_matrix.txt";
+      SaveMatrix(filePath, matrixPtr);
+      break;
+    case 5: //Вывести матрицу на консоль
+      if (matrixPtr == nullptr) {
+        cout << "Матрица отсутствует!" << endl;
+        break;
+      }
+      else {
+        cout << "Текущая матрица: " << endl;
+        cout << *matrixPtr;
+        cout << endl;
+      }
+      break;
+    case 6:
+      algsBoolean.resize(COUNT_ALGS, false);
+      //Функция выбора алгоритмов
+      ChoiceAlgs(algsBoolean);
+      break;
+    case 7:
+      //Вычисление и вывод результатов + сохранить или не сохранить результаты
+      if (matrixPtr == nullptr) {
+        cout << "Сначала задайте матрицу смежности!" << endl;
+        break;
+      }
+      else if (std::count_if(algsBoolean.begin(), algsBoolean.end(),
+        [](bool i) {return i; }) == 0) {
+        cout << "Не выбрано ни одного алгоритма!" << endl;
+        break;
+      }
+      else {
+        algs.resize(COUNT_ALGS, nullptr);
+        CreateAlgs(algs, algsBoolean);
+        vector<double> times(COUNT_ALGS, 0.0);
+        for (Algorithm* alg : algs) {
+          if (alg != nullptr) {
+            alg->SetMatrix(*matrixPtr);
+            TestAlg(alg);
+          }
+        }
+        SaveResultsAfterTestAlgs(algs, times);
+        break;
+      }
+    case 8://Эксперимент
 
-	  if (std::count_if(algsBoolean.begin(), algsBoolean.end(),
-		[](bool i) {return i; }) == 0) 
-	  {
-		cout << "Не выбрано ни одного алгоритма!" << endl;
-		break;
-	  }
-	  CreateAlgs(algs, algsBoolean);
-	  cout << "Выберите тип эксперимента: " << endl;
-	  cout << "1)Эксперимент по изучению времени работы" << endl;
-	  cout << "2)Эксперимент по изучению результата работы" << endl;
-	  cin >> choice;
-	  if (choice == 1) {
-		ExperimentByTime(algs);
-	  }
-	  else if (choice == 2) {
-		ExperimentByResults(algs);
-	  }
-	  else {
-		cout << "Ошибка выбора типа эксперимента" << endl;
-	  }
-	  break;
-	case 0: //Завершение работы программы
-	  exit(1);
-	  break;
-	default:
-	  cout << "Ошибка, нет такой кнопки!" << endl;
-	  break;
-	}
+      if (std::count_if(algsBoolean.begin(), algsBoolean.end(),
+        [](bool i) {return i; }) == 0)
+      {
+        cout << "Не выбрано ни одного алгоритма!" << endl;
+        break;
+      }
+      CreateAlgs(algs, algsBoolean);
+      cout << "Выберите тип эксперимента: " << endl;
+      cout << "1)Эксперимент по изучению времени работы" << endl;
+      cout << "2)Эксперимент по изучению точности" << endl;
+      cin >> choice;
+      if (choice == 1) {
+        ExperimentByTime(algs);
+      }
+      else if (choice == 2) {
+        ExperimentByResults(algs);
+      }
+      else {
+        cout << "Ошибка выбора типа эксперимента" << endl;
+      }
+      break;
+    case 0: //Завершение работы программы
+      exit(1);
+      break;
+    default:
+      cout << "Ошибка, нет такой кнопки!" << endl;
+      break;
+    }
   }
 }
