@@ -43,20 +43,23 @@ void AntColonyAlg::UpdateProbabilityTransition(int start)
 
 int AntColonyAlg::SelectVert(int start)
 {
+  double r = distribution(generator); // случайное число для выбора вершины
   double lenta = 0.0;
-  srand(time(0));
-  double r = (double)(rand()) / RAND_MAX; // сгенерировали число, с помощью которого будет выбирать вершину
   for (const auto& freeVert : GetCurFreeVert())
   {
     lenta += matrix[start][freeVert].GetProbability();
-    if (r > lenta)
-      continue;
-    else
+    if (r <= lenta)
     {
       return freeVert;
     }
+    //if (r > lenta)
+    //  continue;
+    //else
+    //{
+    //  return freeVert;
+    //}
   }
-  return -1;
+  return *GetCurFreeVert().begin();
 }
 
 void AntColonyAlg::UpdatePheromones()
@@ -127,6 +130,7 @@ void AntColonyAlg::Run()
   //цикл, который выполняется заданное число итераций
   for (size_t i = 0; i < countIterations; i++)
   {
+    cout << "Итерация: " << i << endl;
     //стартовая вершина
     int startVer = 0;
     //следующая вершина для перехода
@@ -211,6 +215,10 @@ AntColonyAlg::AntColonyAlg(double _alfa, double _beta,
   pheromoneResidue = _pheromoneResidue;
   pheromoneConst = _pheromoneConst;
   algName = "Муравьиный алгоритм";
+
+  generator.seed(static_cast<unsigned int>(time(0)));
+
+  distribution = std::uniform_real_distribution<double>(0.0, 1.0);
 
   antRoute.resize(countAnts);
   minWeightRoute = INT_MAX;

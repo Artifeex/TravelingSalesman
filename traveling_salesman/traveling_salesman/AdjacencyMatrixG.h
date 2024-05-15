@@ -3,6 +3,7 @@
 #include "Matrix.h"
 #include <fstream>
 
+using namespace std;
 template<class T>
 class AdjacencyMatrixG final : public Graph<T>
 {
@@ -76,6 +77,64 @@ public:
     return out;
   }
 
+  void PrintMatrix(int maxElement) {
+    int width = 0;
+    int element = maxElement;
+    while (element != 0) {
+      element /= 10;
+      width++;
+    }
+
+    for (size_t i = 0; i < m.GetCountRows(); i++)
+    {
+      for (size_t j = 0; j < m.GetCountColumns(); j++)
+      {
+        if (i == j) {
+          cout << std::setw(width) << std::left << "M" << " ";
+          continue;
+        }
+        cout << std::setw(width) << std::left << m[i][j] << " ";
+      }
+      cout << std::endl;
+    }
+  }
+
+  void PrintMatrix() {
+
+    int maxElement = -1;
+    for (size_t i = 0; i < m.GetCountRows(); i++)
+    {
+      for (size_t j = 0; j < m.GetCountColumns(); j++)
+      {
+        if (i == j) {
+          continue;
+        }
+        if (maxElement < m[i][j]) {
+          maxElement = m[i][j];
+        }
+      }
+      
+    }
+
+    int width = 0;
+    while (maxElement != 0) {
+      maxElement /= 10;
+      width++;
+    }
+
+    for (size_t i = 0; i < m.GetCountRows(); i++)
+    {
+      for (size_t j = 0; j < m.GetCountColumns(); j++)
+      {
+        if (i == j) {
+          cout << std::setw(width) << std::left << "M" << " ";
+          continue;
+        }
+        cout << std::setw(width) << std::left << m[i][j] << " ";
+      }
+      cout << std::endl;
+    }
+  }
 
   //Нужны для алгоритма Литтла
   void RemoveRowColumn(int row, int column) {

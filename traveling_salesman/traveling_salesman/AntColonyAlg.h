@@ -3,6 +3,8 @@
 #include "AdjacencyMatrixG.h"
 #include "AntColonyCell.h"
 #include <cmath>
+#include <random>
+#include <ctime>
 #include <float.h>
 //#include <valarray>
 //O(t * m * n^2) t – число итераций, m – количество муравьёв, n – количество вершин в графе
@@ -14,13 +16,16 @@ private:
   double beta; //Влияние близости вершины на выбор муравья
   double pheromoneResidue; // сколько феромона остается после конца итерации
   int countAnts;
-  int startPheromone;
+  double startPheromone;
   int countVertecies;
   std::vector<int> visitedVertecies; // для определения доступных вершин для выбора муравья
   std::vector<std::vector<int>> antRoute;// для отслеживания путей, по который ходили муравьи для обн-я фер-на
   AdjacencyMatrixG<AntColonyCell> matrix;
   int weightIndex; // указывает на положение веса всего маршрута муравья
   int minWeightRoute = INT_MAX;
+
+  std::mt19937 generator;
+  std::uniform_real_distribution<double> distribution;
 
   std::vector<int> bestRoute;
 

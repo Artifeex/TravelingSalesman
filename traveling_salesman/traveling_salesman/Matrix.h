@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <list>
+#include <iomanip>
 template<class T>
 class Matrix
 {
@@ -50,10 +51,49 @@ public:
 
   friend std::ostream& operator<<(std::ostream& out, const Matrix<T>& m)
   {
+	/*int maxElement = -1;
 	for (size_t i = 0; i < m.GetCountRows(); i++)
 	{
 	  for (size_t j = 0; j < m.GetCountColumns(); j++)
 	  {
+		if (i == j) {
+		  continue;
+		}
+		if (maxElement < m[i][j]) {
+		  maxElement = m[i][j];
+		}
+	  }
+
+	}
+
+	int width = 0;
+	while (maxElement != 0) {
+	  maxElement /= 10;
+	  width++;
+	}
+
+	for (size_t i = 0; i < m.GetCountRows(); i++)
+	{
+	  for (size_t j = 0; j < m.GetCountColumns(); j++)
+	  {
+		if (i == j) {
+		  out << std::setw(width) << std::left << "M" << " ";
+		  continue;
+		}
+		out << std::setw(width) << std::left << m[i][j] << " ";
+	  }
+	  out << std::endl;
+	}
+	return out;*/
+
+	for (size_t i = 0; i < m.GetCountRows(); i++)
+	{
+	  for (size_t j = 0; j < m.GetCountColumns(); j++)
+	  {
+		if (i == j) {
+		  out << "M ";
+		  continue;
+		}
 		out << m[i][j] << " ";
 	  }
 	  out << std::endl;

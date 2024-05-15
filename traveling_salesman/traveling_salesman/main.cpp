@@ -10,6 +10,7 @@
 #include <random>
 #include <fstream>
 #include <iomanip>
+#include "TSPParser.h"
 
 using std::cout;
 using std::cin;
@@ -34,6 +35,9 @@ int minBound = 10;
 int maxBound = 100;
 bool isSymmetric = false;
 int dimension = 10;
+
+//Основная матрица задачи
+AdjacencyMatrixG<int>* matrixPtr = nullptr;
 
 enum class Algs
 {
@@ -153,12 +157,17 @@ AdjacencyMatrixG<int>* ReadMatrixFromFile(string filePath, int dimension) {
   std::ifstream file(filePath);
   vector<vector<int>> matrix;
   matrix.resize(dimension);
+  string line;
+  int value;
   for (size_t i = 0; i < dimension; i++)
   {
     matrix[i].resize(dimension);
     for (size_t j = 0; j < dimension; j++)
     {
-      file >> matrix[i][j];
+      file >> line;
+      if (i != j) {
+        matrix[i][j] = atoi(line.c_str());
+      }
     }
   }
   file.close();
@@ -488,6 +497,50 @@ void ExperimentByTime(const vector<Algorithm*>& algs) {
   SaveResultsAfterExp(algs, times, dimensions, true);
 }
 
+void ChooseTypeMatrixMenu() {
+  cout << "Выберите тип данных для загрузки: " << endl;
+  cout << "1) Матрица смежности" << endl;
+  cout << "2) Данные в формате .tsp" << endl;
+  int choice = -1;
+  bool isExit = false;
+  string filePath;
+  vector<vector<int>> matrix;
+  while (!isExit)
+  {
+    cout << "Ваш выбор: ";
+    cin >> choice;
+    switch (choice)
+    {
+    case 1:
+      cout << "Введите размерность матрицы: " << endl;
+      cin >> dimension;
+      cout << "Введите путь до файла: " << endl;
+      //filePath = "input_matrix.txt";
+      cin >> filePath;
+      if (matrixPtr != nullptr) {
+        delete matrixPtr;
+      }
+      matrixPtr = ReadMatrixFromFile(filePath, dimension);
+      isExit = true;
+      break;
+    case 2:
+      cout << "Введите путь до файла: " << endl;
+      cin >> filePath;
+      matrix = parser::TSPParser::tspToDistanceMatrix(filePath);
+      if (!matrix.empty()) {
+        if (matrixPtr != nullptr) {
+          delete matrixPtr;
+        }
+        matrixPtr = new AdjacencyMatrixG<int>(matrix);
+        isExit = true;
+      }
+      break;
+    default:
+      cout << "Ошибка при выборе типа данных! Попробуйте еще раз." << endl;
+      break;
+    }
+  }
+}
 
 int main(int argc, char* argv[])
 {
@@ -499,9 +552,6 @@ int main(int argc, char* argv[])
   bool isExit = false;
   int choice = -1;
   string filePath;
-  //Матрица
-  AdjacencyMatrixG<int>* matrixPtr = nullptr;
-
 
   setlocale(LC_ALL, "Russian");
   while (!isExit) {
@@ -520,18 +570,8 @@ int main(int argc, char* argv[])
       cout << endl;
       break;
     case 3: //Считывание матрицы из файла
-      cout << "Введите размерность матрицы: " << endl;
-      cin >> dimension;
-      cout << "Введите путь до файла: " << endl;
-      //cin >> filePath;
-      filePath = "input_matrix.txt";
-      if (matrixPtr != nullptr) {
-        delete matrixPtr;
-      }
-      matrixPtr = ReadMatrixFromFile(filePath, dimension);
-      cout << "Считанная матрица: " << endl;
-      cout << *matrixPtr;
-      cout << endl;
+      ChooseTypeMatrixMenu();
+      cout << "Матрица успешна загружена в программу" << std::endl;
       break;
     case 4: // Сохранить матрицу в файл
       if (matrixPtr == nullptr) {
@@ -540,7 +580,7 @@ int main(int argc, char* argv[])
       }
       cout << "Введите название файла: ";
       cin >> filePath;
-      filePath = "saved_matrix.txt";
+      //filePath = "saved_matrix.txt";
       SaveMatrix(filePath, matrixPtr);
       break;
     case 5: //Вывести матрицу на консоль
