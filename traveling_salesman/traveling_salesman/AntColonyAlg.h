@@ -28,6 +28,7 @@ private:
   std::uniform_real_distribution<double> distribution;
 
   std::vector<int> bestRoute;
+  std::vector<int> iterationBestResults;
 
   double closConst; // для близости
   double pheromoneConst; // Сколько феромона выделил муравей суммарно на всем пути
@@ -67,6 +68,8 @@ public:
 	double _pheromoneResidue = 0.3, double _pheromoneConst = 1, int _countIterations = 1);
   int GetMinWeight() override;
   std::vector<int>  GetMinRoute() override;
+  
+  std::vector<int> historyResults();
   
 };
 

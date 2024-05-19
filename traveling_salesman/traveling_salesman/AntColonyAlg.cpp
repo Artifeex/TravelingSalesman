@@ -45,7 +45,8 @@ int AntColonyAlg::SelectVert(int start)
 {
   double r = distribution(generator); // случайное число для выбора вершины
   double lenta = 0.0;
-  for (const auto& freeVert : GetCurFreeVert())
+  vector<int> freeVerticies = GetCurFreeVert();
+  for (const auto& freeVert : freeVerticies)
   {
     lenta += matrix[start][freeVert].GetProbability();
     if (r <= lenta)
@@ -59,7 +60,7 @@ int AntColonyAlg::SelectVert(int start)
     //  return freeVert;
     //}
   }
-  return *GetCurFreeVert().begin();
+  return freeVerticies[freeVerticies.size() - 1];
 }
 
 void AntColonyAlg::UpdatePheromones()
@@ -127,12 +128,16 @@ void AntColonyAlg::SetNameAlg(std::string _nameAlg)
 
 void AntColonyAlg::Run()
 {
+  std::random_device rd;  // Источник энтропии
+  std::mt19937 gen(rd()); // Стандартный генератор псевдослучайных чисел (Mersenne Twister)
+  std::uniform_int_distribution<> dis(0, countVertecies - 1); // Равномерное распределение в диапазоне [min, max]
   //цикл, который выполняется заданное число итераций
   for (size_t i = 0; i < countIterations; i++)
   {
-    cout << "Итерация: " << i << endl;
+    //cout << "Итерация: " << i << endl;
     //стартовая вершина
     int startVer = 0;
+    int startIterationVert = 0;
     //следующая вершина для перехода
     int nextVert = 0;
     //цикл, который выполняет работу каждого муравья
@@ -141,7 +146,8 @@ void AntColonyAlg::Run()
       //выбор стартовой вершины. В данном случае мы каждого муравья выпускаем из новой вершины
       //но если муравьев больше, чем число вершин, то за счет деления по модулю некоторые муравьи
       //будут начинать свою работу из одинаковых вершин
-      startVer = numberAnt % countVertecies;
+      startVer = dis(gen);
+      startIterationVert = startVer;
       //отмечаем текущую вершину, в котором находится муравей как посещенную
       visitedVertecies[startVer] = 1;
       //сохраняем текущую вершину в маршрут
@@ -162,9 +168,9 @@ void AntColonyAlg::Run()
         startVer = nextVert;
       }
       //добавляем последний переход для замыкания маршрута
-      antRoute[numberAnt][countVertecies] = numberAnt % countVertecies;
+      antRoute[numberAnt][countVertecies] = startIterationVert;
       //добавляем вес последнего перехода для замыкания маршрута
-      antRoute[numberAnt][weightIndex] += matrix[startVer][numberAnt % countVertecies].GetWeight();
+      antRoute[numberAnt][weightIndex] += matrix[startVer][startIterationVert].GetWeight();
       //очищения массива посещенных вершин
       ClearVisitedVert();
     }
@@ -246,6 +252,11 @@ std::vector<int> AntColonyAlg::GetMinRoute()
   return bestRoute;
 }
 
+std::vector<int> AntColonyAlg::historyResults()
+{
+  return iterationBestResults;
+}
+
 int AntColonyAlg::CalculateMinWeight() noexcept
 {
   int localMinRoad = INT_MAX;
@@ -272,8 +283,10 @@ std::vector<int> AntColonyAlg::CalculateMinRoute()
 
 void AntColonyAlg::UpdateResults()
 {
-  if (minWeightRoute > CalculateMinWeight()) {
-    minWeightRoute = CalculateMinWeight();
+  int curIterationMinWeight = CalculateMinWeight();
+  iterationBestResults.push_back(curIterationMinWeight);
+  if (minWeightRoute > curIterationMinWeight) {
+    minWeightRoute = curIterationMinWeight;
     bestRoute = CalculateMinRoute();
   }
 }

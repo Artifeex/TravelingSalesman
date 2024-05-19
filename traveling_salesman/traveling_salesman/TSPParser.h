@@ -11,7 +11,6 @@ namespace parser {
   {
     public: 
       static std::vector<std::vector<int>> tspToDistanceMatrix(const std::string& tspFile);
-
   };
 }
 

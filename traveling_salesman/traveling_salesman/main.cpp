@@ -22,12 +22,12 @@ const int COUNT_ALGS = 6;
 
 //Параметры Муравьиного алгоритма
 double alfa = 1.0;
-double beta = 2.0;
-double startPheromone = 0.2;
+double beta = 1.0;
+double startPheromone = 0.1;
 double constClosness = 1.0;
-int countAnts = 12;
-double pheromoneResidue = 0.3;
-double totalPheromone = 1.0;
+int countAnts = 40;
+double pheromoneResidue = 0.1;
+double totalPheromone = 100;
 int countIterations = 5;
 
 //Параметры генерации
@@ -526,6 +526,7 @@ void ChooseTypeMatrixMenu() {
     case 2:
       cout << "Введите путь до файла: " << endl;
       cin >> filePath;
+      //filePath = "datasets/eil101.txt";
       matrix = parser::TSPParser::tspToDistanceMatrix(filePath);
       if (!matrix.empty()) {
         if (matrixPtr != nullptr) {
@@ -635,12 +636,39 @@ int main(int argc, char* argv[])
       cout << "Выберите тип эксперимента: " << endl;
       cout << "1)Эксперимент по изучению времени работы" << endl;
       cout << "2)Эксперимент по изучению точности" << endl;
+      cout << "3)Эксперименты по изучению мураьвиного алгоритма" << endl;
       cin >> choice;
       if (choice == 1) {
         ExperimentByTime(algs);
       }
       else if (choice == 2) {
         ExperimentByResults(algs);
+      }
+      else if (choice == 3) { //подумать о том, что делать ? Проверить, что экспериемнты проведены или 
+        //провести эксперимент на заданной матрице
+        cout << "1) Изучение стабильности алгоритма" << std::endl;
+        cin >> choice;
+        if (choice == 1) {
+          if (algs[1] != nullptr) {
+            cout << "Введите название файла для сохранения " <<
+              "истории найденных путей на протяжении работы алгоритма" << endl;
+            string filePath;
+            cin >> filePath;
+            std::ofstream file(filePath);
+            AntColonyAlg* antColony = dynamic_cast<AntColonyAlg*>(algs[1]);
+            antColony->SetMatrix(*matrixPtr);
+            antColony->Run();
+            std::vector<int> historyResults = antColony->historyResults();
+            for (size_t i = 0; i < historyResults.size(); i++)
+            {
+              file << historyResults[i] << " ";
+            }
+            file.close();
+          }
+          else {
+            std::cout << "Не заданы параметры муравьиного алгоритма в меню выбора алгоритмов!" << std::endl;
+          }
+        }
       }
       else {
         cout << "Ошибка выбора типа эксперимента" << endl;
