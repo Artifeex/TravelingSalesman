@@ -39,7 +39,7 @@ private:
   void AddInfinity(AdjacencyMatrixG<int>& m);
 public:
   LittleAlg(int _record): curRecord(_record) {
-    algName = "Ветвей и границ";
+    algName = "Алгоритм Литтла";
   }
 
   void SetMatrix(const AdjacencyMatrixG<int>& m) override;

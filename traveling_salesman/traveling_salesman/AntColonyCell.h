@@ -11,15 +11,15 @@ private:
 public:
   AntColonyCell(double _closeness, double _amountPheromone, int _weight)
   {
-	if (_closeness < 0 || _amountPheromone < 0)
-	{
-	  throw std::string("Ошибка ввода числа феромонов или близости!");
-	}
+    if (_closeness < 0 || _amountPheromone < 0)
+    {
+      throw std::string("Ошибка ввода числа феромонов или близости!");
+    }
 
-	closeness = _closeness;
-	amountPheromone = _amountPheromone;
-	probabilityTransition = 0.0;
-	weight = _weight;
+    closeness = _closeness;
+    amountPheromone = _amountPheromone;
+    probabilityTransition = 0.0;
+    weight = _weight;
   }
   AntColonyCell() = default;
 

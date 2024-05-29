@@ -3,14 +3,14 @@
 void AntColonyCell::ChangeCloseness(double nCloseness)
 {
   if (nCloseness < 0)
-	throw std::string("Ошибка значения близости");
+    throw std::string("Ошибка значения близости");
   closeness = nCloseness;
 }
 
 void AntColonyCell::ChangePheromone(double nPheromone)
 {
   if (nPheromone < 0)
-	throw std::string("Ошибка значения близости");
+    throw std::string("Ошибка значения близости");
   amountPheromone = nPheromone;
 }
 
@@ -38,5 +38,3 @@ int AntColonyCell::GetWeight()
 {
   return weight;
 }
-
-

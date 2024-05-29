@@ -178,6 +178,7 @@ void SaveMatrix(string filePath, const AdjacencyMatrixG<int>* matrPtr) {
   std::ofstream file(filePath);
   file << *matrPtr;
   file.close();
+  std::cout << "Матрица успешно сохранена!" << endl;
 }
 
 void ChoiceAlgs(vector<bool>& algs) {
@@ -188,8 +189,8 @@ void ChoiceAlgs(vector<bool>& algs) {
   cout << "1) Простой перебор" << endl;
   cout << "2) Муравьиный алгоритм" << endl;
   cout << "3) Ближайшего соседа" << endl;
-  cout << "4) Модернизированный алгоритм ближайшего соседа" << endl;
-  cout << "5) Метод ветвей и границ" << endl;
+  cout << "4) Улучшенный алгоритм ближайшего соседа" << endl;
+  cout << "5) Алгоритм Литтла" << endl;
   cout << "6) Метод 2-opt" << endl;
   while (!isExit) {
     cout << "Выберите алгоритм(для выхода введите 0): " << endl;
@@ -500,7 +501,7 @@ void ExperimentByTime(const vector<Algorithm*>& algs) {
 void ChooseTypeMatrixMenu() {
   cout << "Выберите тип данных для загрузки: " << endl;
   cout << "1) Матрица смежности" << endl;
-  cout << "2) Данные в формате .tsp" << endl;
+  cout << "2) Данные из библиотеки TSPLIB" << endl;
   int choice = -1;
   bool isExit = false;
   string filePath;
@@ -583,6 +584,7 @@ int main(int argc, char* argv[])
       cin >> filePath;
       //filePath = "saved_matrix.txt";
       SaveMatrix(filePath, matrixPtr);
+      
       break;
     case 5: //Вывести матрицу на консоль
       if (matrixPtr == nullptr) {
@@ -636,7 +638,7 @@ int main(int argc, char* argv[])
       cout << "Выберите тип эксперимента: " << endl;
       cout << "1)Эксперимент по изучению времени работы" << endl;
       cout << "2)Эксперимент по изучению точности" << endl;
-      cout << "3)Эксперименты по изучению мураьвиного алгоритма" << endl;
+      cout << "3)Эксперимент по изучению влияния параметров муравьиного алгоритма" << endl;
       cin >> choice;
       if (choice == 1) {
         ExperimentByTime(algs);
@@ -644,11 +646,8 @@ int main(int argc, char* argv[])
       else if (choice == 2) {
         ExperimentByResults(algs);
       }
-      else if (choice == 3) { //подумать о том, что делать ? Проверить, что экспериемнты проведены или 
-        //провести эксперимент на заданной матрице
-        cout << "1) Изучение стабильности алгоритма" << std::endl;
-        cin >> choice;
-        if (choice == 1) {
+      else if (choice == 3) { 
+        if (matrixPtr != nullptr && matrixPtr->GetCountVertices() > 0) {
           if (algs[1] != nullptr) {
             cout << "Введите название файла для сохранения " <<
               "истории найденных путей на протяжении работы алгоритма" << endl;
@@ -671,7 +670,7 @@ int main(int argc, char* argv[])
         }
       }
       else {
-        cout << "Ошибка выбора типа эксперимента" << endl;
+        cout << "Не задана матрица для тестирования" << endl;
       }
       break;
     case 0: //Завершение работы программы
