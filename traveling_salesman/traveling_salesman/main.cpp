@@ -69,8 +69,12 @@ void GenerationPreference(bool& isSymetric, int& dem, int& minBound, int& maxBou
   if (choice == 1) {
     isSymetric = true;
   }
-  else {
+  else if (choice == 2) {
     isSymetric = false;
+  }
+  else {
+    cout << "Ошибка выбора симметричности матрицы" << endl;
+    return;
   }
   cout << endl;
   cout << "Размерность матрицы: ";
@@ -155,6 +159,10 @@ AdjacencyMatrixG<int>* GenerateMatrix(bool isSymetric, int dem, int minBound, in
 
 AdjacencyMatrixG<int>* ReadMatrixFromFile(string filePath, int dimension) {
   std::ifstream file(filePath);
+  if (!file.is_open()) {
+    cout << "Не удалось открыть файл" << filePath << endl;
+    return nullptr;
+  }
   vector<vector<int>> matrix;
   matrix.resize(dimension);
   string line;
@@ -176,6 +184,10 @@ AdjacencyMatrixG<int>* ReadMatrixFromFile(string filePath, int dimension) {
 
 void SaveMatrix(string filePath, const AdjacencyMatrixG<int>* matrPtr) {
   std::ofstream file(filePath);
+  if (matrPtr == nullptr) {
+    cout << "В программу не загружена ни одна матрица!" << endl;  
+    return;
+  }
   file << *matrPtr;
   file.close();
   std::cout << "Матрица успешно сохранена!" << endl;
@@ -668,9 +680,12 @@ int main(int argc, char* argv[])
             std::cout << "Не заданы параметры муравьиного алгоритма в меню выбора алгоритмов!" << std::endl;
           }
         }
+        else {
+          cout << "Не задана матрица для тестирования" << endl;
+        }
       }
       else {
-        cout << "Не задана матрица для тестирования" << endl;
+        cout << "Ошибка выбора типа эксперимента" << endl;
       }
       break;
     case 0: //Завершение работы программы
