@@ -194,9 +194,10 @@ void SaveMatrix(string filePath, const AdjacencyMatrixG<int>* matrPtr) {
 }
 
 void ChoiceAlgs(vector<bool>& algs) {
+  algs.clear();
   algs.resize(COUNT_ALGS);
   bool isExit = false;
-  int choice;
+  char choice;
   cout << "Алгоритмы: " << endl;
   cout << "1) Простой перебор" << endl;
   cout << "2) Муравьиный алгоритм" << endl;
@@ -209,26 +210,26 @@ void ChoiceAlgs(vector<bool>& algs) {
     cin >> choice;
     switch (choice)
     {
-    case 1:
+    case '1':
       algs[static_cast<int>(Algs::bruteForce)] = true;
       break;
-    case 2:
+    case '2':
       GetParamsAntColonyAlg();
       algs[static_cast<int>(Algs::ant)] = true;
       break;
-    case 3:
+    case '3':
       algs[static_cast<int>(Algs::nearNeigh)] = true;
       break;
-    case 4:
+    case '4':
       algs[static_cast<int>(Algs::upNearNeigh)] = true;
       break;
-    case 5:
+    case '5':
       algs[static_cast<int>(Algs::bounds)] = true;
       break;
-    case 6:
+    case '6':
       algs[static_cast<int>(Algs::opt)] = true;
       break;
-    case 0:
+    case '0':
       isExit = true;
       break;
     default:
@@ -325,7 +326,7 @@ void SaveResultsAfterExp(const vector<Algorithm*>& algs,
     cin >> filePath;
     std::ofstream file(filePath);
     cout << endl;
-    cout << "Сохранить для таблицы Latex?(1 - Да, 2 - Нет)" << std::endl;
+    cout << "Сохранить для построения графиков?(1 - Да, 2 - Нет)" << std::endl;
     cin >> choice;
     if (choice == 1) {
       file << "Dim";
@@ -347,15 +348,16 @@ void SaveResultsAfterExp(const vector<Algorithm*>& algs,
         }
         file << " \\\\" << endl;
       }
+      cout << "Результаты сохранены!" << endl;
     }
     else {
       file << std::setw(sizeAlgName) << std::left << "Algorithm" << std::setw(sizeDim) <<
         "Dim" << std::setw(sizeResults);
       if (isByTime) {
-        cout << "Time" << std::endl;
+        file << "Time" << std::endl;
       }
       else {
-        cout << "Mean Value" << std::endl;
+        file << "Mean Value" << std::endl;
       }
       for (size_t i = 0; i < COUNT_ALGS; i++)
       {
@@ -379,7 +381,6 @@ void SaveResultsAfterExp(const vector<Algorithm*>& algs,
   else {
     std::cout << "Ошибка!" << std::endl;
   }
-
 }
 
 void SaveResultsAfterTestAlgs(const vector<Algorithm*>& algs, const vector<double>& times) {
@@ -407,6 +408,7 @@ void SaveResultsAfterTestAlgs(const vector<Algorithm*>& algs, const vector<doubl
         file << endl;
       }
     }
+    cout << "Результаты сохранен в файл" << path << endl;
   }
 }
 
@@ -579,9 +581,7 @@ int main(int argc, char* argv[])
       break;
     case 2: // Генерация матрицы и вывод ее на экран
       matrixPtr = GenerateMatrix(isSymmetric, dimension, minBound, maxBound);
-      cout << "Сгенерированная матрица: " << endl;
-      cout << *matrixPtr;
-      cout << endl;
+      cout << "Матрица усмешно сгенерирована!" << endl;
       break;
     case 3: //Считывание матрицы из файла
       ChooseTypeMatrixMenu();
@@ -610,6 +610,7 @@ int main(int argc, char* argv[])
       }
       break;
     case 6:
+      algsBoolean.clear();
       algsBoolean.resize(COUNT_ALGS, false);
       //Функция выбора алгоритмов
       ChoiceAlgs(algsBoolean);
@@ -685,7 +686,7 @@ int main(int argc, char* argv[])
         }
       }
       else {
-        cout << "Ошибка выбора типа эксперимента" << endl;
+        cout << "Ошибка выбора типа эксперимента " << endl;
       }
       break;
     case 0: //Завершение работы программы
